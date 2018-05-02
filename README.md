@@ -2,6 +2,12 @@
 
 This is a minimal flask application demostrating how to integrate a database backend using the sqlalchemay and flask-sqlalchemy libraries
 
+The application provides a simple REST endpoint to access the data as follows:
+
+|HTTP Method | URL | Description |
+|------------|-----|-------------|
+| GET | `/respondents`| Get a list of records for all respondents |
+| GET | `/respondents/<id>` | Get a single records for respondent with `id = <id>` |
 
 # Quick Start
 
