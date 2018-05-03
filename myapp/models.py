@@ -7,15 +7,15 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 # Defining the Model class that maps to the database schema
-class Respondent(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+class Run(db.Model):
+    id = db.Column(db.String, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
-    email = db.Column(db.String(50), unique=True)
-    height = db.Column(db.Float)
-    age = db.Column(db.Integer)
-    blood_type = db.Column(db.String(3))
+    desc = db.Column(db.String(50))
+    start_date = db.Column(db.String(50))
+    end_date = db.Column(db.String(50))
+    status = db.Column(db.String(50))
 
     # A helper function that defines how a record will be displayed
     # in the console
     def __repr__(self):
-        return '<Respondent {name}>'.format(name=self.name)
+        return '<Run {name}>'.format(name=self.name)

@@ -1,13 +1,14 @@
-# Example Flask Application with Database
+# IPS Data API
 
-This is a minimal flask application demostrating how to integrate a database backend using the sqlalchemay and flask-sqlalchemy libraries
+This is a minimal flask application integrating a database backend using the sqlalchemay and flask-sqlalchemy libraries
 
 The application provides a simple REST endpoint to access the data as follows:
 
 |HTTP Method | URL | Description |
 |------------|-----|-------------|
-| GET | `/respondents`| Get a list of records for all respondents |
-| GET | `/respondents/<id>` | Get a single records for respondent with `id = <id>` |
+| GET | `/runs`| Get a list of all runs |
+| GET | `/runs/<id>` | Get a single record for run with `id = <id>` |
+| POST | `/runs` | Create a new run (associated data must be passed on through JSON) |
 
 # Quick Start
 
@@ -25,18 +26,18 @@ FLASK_APP=myapp/app.py
 5. Run the application with `flask run`
 
 
-## Using a `env.bat` File
+# Making API requests
 
-In windows to make step 4 above easier you can create a `env.bat` file that sets these variables for the current active
-terminal session:
+You can access the data by making API requests. The `requests` library provides this functionality, see it's documentation (http://www.python-requests.org/en/latest/) for more information.
+
+Below is some sample code to retrieve all runs (we assume the app is running on host 127.0.0.1).
 
 ```
-@ECHO OFF
-set FLASK_APP=myapp/app.py
-set FLASK_DEBUG=1
+import requests
+import json
+response = requests.get('127.0.0.1/runs')
+content = json.loads(response.content)
+print(content[0])
 ```
 
-This can be executed simply by running `env.bat`.
-
-Following the 12 factor app, we will be storing configuration in environment variables, which later will include secret
-information. So *make sure that this file is never submitted to version control*
+All data to and from the API is in JSON.
