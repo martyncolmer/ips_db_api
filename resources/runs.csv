@@ -1,0 +1,4 @@
+id,name,desc,start_date,end_date,status
+IPSSeedRun,Initial IPS Run,Seed Run for IPS Test - Should be copied for testing - DO NOT START THIS RUN,12FEB2018:13:04:15,12FEB2018:13:04:15,Completed
+IPSSeedRunFR02,New initial IPS Run for FR02,New seed Run for IPS - Should be copied - DO NOT START THIS RUN,12FEB2018:13:04:30,12FEB2018:13:04:30,Deleted
+a97e0960-6a49-402b-a784-ec5c3c2d74ef,190218_removedserial,New seed Run for IPS - Should be copied - DO NOT START THIS RUN,01OCT2017:00:00:00,31OCT2017:00:00:00,Running
