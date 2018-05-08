@@ -17,7 +17,7 @@ db.init_app(app)
 def get_runs(run_id=None):
 
     column_names = ['id', 'name', 'desc', 'start_date', 'end_date', 'status']
-
+    # if a run id is provided search for this specific run
     if run_id:
         # Get a single record
         data = Run.query.get(run_id)
@@ -40,6 +40,7 @@ def get_runs(run_id=None):
 
 @app.route('/runs', methods=['POST'])
 def create_run():
+    # the request should be json and an id must be present
     if not request.json or 'id' not in request.json:
         abort(400)
 
