@@ -16,7 +16,7 @@ db.init_app(app)
 @app.route('/runs/<id>', methods=['GET'])
 def get_runs(run_id=None):
 
-    column_names = ['id', 'name', 'desc', 'start_date', 'end_date', 'status']
+    column_names = ['id', 'name', 'desc', 'start_date', 'end_date', 'status', 'type']
     # if a run id is provided search for this specific run
     if run_id:
         # Get a single record
@@ -48,7 +48,9 @@ def create_run():
               name=request.json['name'],
               desc=request.json.get('desc', ""),
               start_date=request.json.get('start_date', ""),
-              end_date=request.json.get('end_date', ""))
+              end_date=request.json.get('end_date', ""),
+              status=request.json.get('status', ""),
+              type=request.json.get('type', ""))
     db.session.add(run)
     db.session.commit()
 
