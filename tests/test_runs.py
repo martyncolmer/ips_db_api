@@ -2,7 +2,7 @@ import pytest
 import tempfile
 import os
 import json
-import init_db
+from tests import init_db_test
 
 from myapp import app as my_app
 
@@ -13,7 +13,7 @@ def client():
     my_app.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + file_name
     my_app.app.config['TESTING'] = True
 
-    init_db.main()
+    init_db_test.main()
     client = my_app.app.test_client()
     with my_app.app.app_context():
         my_app.db.init_app(my_app.app)
