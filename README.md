@@ -7,8 +7,9 @@ The application provides a simple REST endpoint to access the data as follows:
 |HTTP Method | URL | Description |
 |------------|-----|-------------|
 | GET | `/runs`| Get a list of all runs |
-| GET | `/runs/<id>` | Get a single record for run with `id = <id>` |
+| GET | `/runs/<run_id>` | Get a single record for run with `id = <run_id>` |
 | POST | `/runs` | Create a new run (associated data must be passed on through JSON) |
+| PUT | `/runs/<run_id>` | Update the run with `<run_id>` (associated data must be passed on through JSON) |
 
 # Quick Start
 
