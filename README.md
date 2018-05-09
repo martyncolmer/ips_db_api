@@ -41,3 +41,15 @@ print(content[0])
 ```
 
 All data to and from the API is in JSON.
+
+# Pushing to CloudFoundry
+
+Follow these steps to upload the app to CloudFoundry:
+
+* Make sure you have the CloudFoundry Command Line Interface (CLI) installed (service desk or artifactory)
+* Make sure you have CloudFoundry login credentials (service desk request?)
+* Open a command line window (cmd from Start menu)
+* Change directory to where the app is located on your local pc (e.g. D:/ips_db_api)
+* Log in to CloudFoundry with `cf login -u <username> -p <password>`
+* Push the app to CloudFoundry with `cf push`
+* If the command `cf` does not work you may have to use the full path to the CLI executble (e.g. C:/Applications/CloudFoundry/cf.exe)
