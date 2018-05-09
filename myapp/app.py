@@ -13,7 +13,7 @@ db.init_app(app)
 
 
 @app.route('/runs', methods=['GET'])
-@app.route('/runs/<id>', methods=['GET'])
+@app.route('/runs/<run_id>', methods=['GET'])
 def get_runs(run_id=None):
 
     column_names = ['id', 'name', 'desc', 'start_date', 'end_date', 'status', 'type']
@@ -21,6 +21,8 @@ def get_runs(run_id=None):
     if run_id:
         # Get a single record
         data = Run.query.get(run_id)
+        if not data:
+            abort(400)
         output = {}
         for name in column_names:
             output[name] = getattr(data, name)
@@ -57,3 +59,24 @@ def create_run():
     return "", 201
 
 
+@app.route('/runs/<run_id>', methods=['PUT'])
+def update_run(run_id):
+    # the request should be json and an id must be present
+    if not request.json or not run_id:
+        abort(400)
+
+    data = Run.query.get(run_id)
+
+    if not data:
+        abort(400)
+
+    data.name = request.json['name']
+    data.desc = request.json.get('desc', "")
+    data.start_date = request.json.get('start_date', "")
+    data.end_date = request.json.get('end_date', "")
+    data.status = request.json.get('status', "")
+    data.type = request.json.get('type', "")
+
+    db.session.commit()
+
+    return "", 200
