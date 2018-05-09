@@ -1,4 +1,3 @@
-
 from flask_sqlalchemy import SQLAlchemy
 
 # This class provided by flask-sqlalchemy can be used to access all other
@@ -14,6 +13,7 @@ class Run(db.Model):
     start_date = db.Column(db.String(50))
     end_date = db.Column(db.String(50))
     status = db.Column(db.String(50))
+    type = db.Column(db.String(50))
 
     # A helper function that defines how a record will be displayed
     # in the console
