@@ -42,6 +42,16 @@ print(content[0])
 
 All data to and from the API is in JSON.
 
+
+# Making changes to the app
+
+Changes to the app should be made on a separate branch and submitted through a merge request.
+All data used to initialise the database resides in `resources`.
+All the database tables are specified in `models.py`
+All api endpoints are specified in `app.py`
+Should you need additional packages other than the ones listed in `requirements.txt` make sure to include them in the `vendor` folder.
+
+
 # Pushing to CloudFoundry
 
 Follow these steps to upload the app to CloudFoundry:
