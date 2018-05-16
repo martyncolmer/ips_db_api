@@ -83,13 +83,19 @@ def update_run(run_id):
 
 
 @app.route('/SHIFT_DATA', methods=['GET'])
+@app.route('/shift_data', methods=['GET'])
 @app.route('/SHIFT_DATA/<run_id>', methods=['GET'])
+@app.route('/shift_data/<run_id>', methods=['GET'])
 @app.route('/SHIFT_DATA/<run_id>/<data_source>', methods=['GET'])
-def get_shift_data(run_id=None, data_source=None):
+@app.route('/shift_data/<run_id>/<data_source>', methods=['GET'])
+def get_shift_data(run_id=None, data_source='0'):
 
     column_names = ['RUN_ID', 'YEAR', 'MONTH', 'DATA_SOURCE_ID', 'PORTROUTE', 'WEEKDAY', 'ARRIVEDEPART', 'TOTAL', 'AM_PM_NIGHT']
 
     data = ShiftData.query.all()
+
+    if not data:
+        abort(400)
 
     output = []
     for rec in data:
@@ -97,5 +103,29 @@ def get_shift_data(run_id=None, data_source=None):
         for name in column_names:
             output_record[name] = getattr(rec, name)
         output.append(output_record)
+
+    if run_id:
+        run_filtered = []
+
+        for rec in output:
+            if rec['RUN_ID'] == run_id:
+                run_filtered.append(rec)
+
+        if len(run_filtered) == 0:
+            abort(400)
+
+        output = run_filtered
+
+    if data_source != '0':
+        ds_filtered = []
+
+        for rec in output:
+            if rec['DATA_SOURCE_ID'] == data_source:
+                ds_filtered.append(rec)
+
+        if len(ds_filtered) == 0:
+            abort(400)
+
+        output = ds_filtered
 
     return jsonify(output)
