@@ -66,4 +66,3 @@ def test_get_shift_data_data_source(client):
     for x in json_data:
         assert '4' == x['DATA_SOURCE_ID']
 
-
