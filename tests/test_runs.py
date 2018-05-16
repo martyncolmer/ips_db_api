@@ -29,7 +29,7 @@ def test_get_all_runs(client):
     assert rv.status_code == 200
     json_data = json.loads(rv.data)
     assert len(json_data) == 5
-    assert '00d06a4c-a012-4dc7-a300-1fa735d9ca1f' == json_data[0]['id']
+    assert '9e5c1872-3f8e-4ae5-85dc-c67a602d011e' == json_data[0]['id']
     assert 'fcd39e00-6769-4d12-9915-0c9330aee408' == json_data[1]['id']
     assert 'f144ec22-921f-43ff-a93c-189695336580' == json_data[2]['id']
     assert '1f451a03-02a2-4597-8a95-70961b1a9c29' == json_data[3]['id']
@@ -41,11 +41,11 @@ def test_get_one_run(client):
     rv = client.get('runs/0')
     assert rv.status_code == 400
 
-    rv = client.get('/runs/00d06a4c-a012-4dc7-a300-1fa735d9ca1f')
+    rv = client.get('/runs/9e5c1872-3f8e-4ae5-85dc-c67a602d011e')
     assert rv.status_code == 200
     json_data = json.loads(rv.data)
     assert len(json_data) == 7
-    assert '00d06a4c-a012-4dc7-a300-1fa735d9ca1f' == json_data['id']
+    assert '9e5c1872-3f8e-4ae5-85dc-c67a602d011e' == json_data['id']
     assert 'Seed Run for IPS Test - Should be copied for testing - DO NOT START THIS RUN' == json_data['desc']
     assert '10022018' == json_data['start_date']
     assert '10022018' == json_data['end_date']
@@ -95,12 +95,12 @@ def test_update_run(client):
     assert rv.status_code == 400
 
     # updating correct run with correct data should succeed
-    rv = client.put('/runs/00d06a4c-a012-4dc7-a300-1fa735d9ca1f', data=json.dumps(json_data),
+    rv = client.put('/runs/9e5c1872-3f8e-4ae5-85dc-c67a602d011e', data=json.dumps(json_data),
                      content_type='application/json')
     assert rv.status_code == 200
 
     # check update succeeded
-    rv = client.get('/runs/00d06a4c-a012-4dc7-a300-1fa735d9ca1f')
+    rv = client.get('/runs/9e5c1872-3f8e-4ae5-85dc-c67a602d011e')
     assert rv.status_code == 200
     json_data = json.loads(rv.data)
     assert 'desc' == json_data['desc']
