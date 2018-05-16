@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, abort
 
-from myapp.models import db, Run
+from myapp.models import db, Run, ShiftData
 
 app = Flask(__name__)
 
@@ -80,3 +80,22 @@ def update_run(run_id):
     db.session.commit()
 
     return "", 200
+
+
+@app.route('/SHIFT_DATA', methods=['GET'])
+@app.route('/SHIFT_DATA/<run_id>', methods=['GET'])
+@app.route('/SHIFT_DATA/<run_id>/<data_source>', methods=['GET'])
+def get_shift_data(run_id=None, data_source=None):
+
+    column_names = ['RUN_ID', 'YEAR', 'MONTH', 'DATA_SOURCE_ID', 'PORTROUTE', 'WEEKDAY', 'ARRIVEDEPART', 'TOTAL', 'AM_PM_NIGHT']
+
+    data = ShiftData.query.all()
+
+    output = []
+    for rec in data:
+        output_record = {}
+        for name in column_names:
+            output_record[name] = getattr(rec, name)
+        output.append(output_record)
+
+    return jsonify(output)
