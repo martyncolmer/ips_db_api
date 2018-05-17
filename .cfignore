@@ -2,3 +2,8 @@
 venv
 env.bat
 README.md
+.git
+.local
+tests
+.xml
+__pycache__
