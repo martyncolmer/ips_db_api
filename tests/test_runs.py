@@ -49,7 +49,7 @@ def test_get_one_run(client):
     assert 'Seed Run for IPS Test - Should be copied for testing - DO NOT START THIS RUN' == json_data['desc']
     assert '10022018' == json_data['start_date']
     assert '10022018' == json_data['end_date']
-    assert '6' == json_data['type']
+    assert '0' == json_data['type']
     assert '0' == json_data['status']
     assert 'TestRun' == json_data['name']
 
