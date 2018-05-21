@@ -38,3 +38,16 @@ class ShiftData(db.Model):
     # in the console
     def __repr__(self):
         return '<Shift_data {run_id}>'.format(name=self.run_id)
+
+
+# Defining the Model class that maps to the database schema
+class RunStatus(db.Model):
+    RUN_ID = db.Column(db.String, primary_key=True)
+    NUMBER = db.Column(db.String(2), primary_key=True)
+    NAME = db.Column(db.String(50), primary_key=True)
+    STATUS = db.Column(db.String(1), primary_key=True)
+
+    # A helper function that defines how a record will be displayed
+    # in the console
+    def __repr__(self):
+        return '<RunStatus {RUN_ID}>'.format(name=self.RUN_ID)

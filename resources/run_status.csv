@@ -1,0 +1,15 @@
+RUN_ID,NUMBER,NAME,STATUS
+9e5c1872-3f8e-4ae5-85dc-c67a602d011e,1,Calculate Shift Weight,0
+9e5c1872-3f8e-4ae5-85dc-c67a602d011e,2,Calculate Non-Response Weight,0
+9e5c1872-3f8e-4ae5-85dc-c67a602d011e,3,Calculate Minimums Weight,0
+9e5c1872-3f8e-4ae5-85dc-c67a602d011e,4,Calculate Traffic Weight,0
+9e5c1872-3f8e-4ae5-85dc-c67a602d011e,5,Calculate Unsampled Weight,0
+9e5c1872-3f8e-4ae5-85dc-c67a602d011e,6,Calculate Imbalance Weight,0
+9e5c1872-3f8e-4ae5-85dc-c67a602d011e,7,Calculate Final Weight,0
+9e5c1872-3f8e-4ae5-85dc-c67a602d011e,8,Stay Imputation,0
+9e5c1872-3f8e-4ae5-85dc-c67a602d011e,9,Fares Imputation,0
+9e5c1872-3f8e-4ae5-85dc-c67a602d011e,10,Spend Imputation,0
+9e5c1872-3f8e-4ae5-85dc-c67a602d011e,11,Rail Imputation,0
+9e5c1872-3f8e-4ae5-85dc-c67a602d011e,12,Regional Weight,0
+9e5c1872-3f8e-4ae5-85dc-c67a602d011e,13,Town Stay and Expenditure Imputation,0
+9e5c1872-3f8e-4ae5-85dc-c67a602d011e,14,Air Miles,0
