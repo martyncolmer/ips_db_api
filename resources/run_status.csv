@@ -13,3 +13,17 @@ RUN_ID,NUMBER,NAME,STATUS
 9e5c1872-3f8e-4ae5-85dc-c67a602d011e,12,Regional Weight,0
 9e5c1872-3f8e-4ae5-85dc-c67a602d011e,13,Town Stay and Expenditure Imputation,0
 9e5c1872-3f8e-4ae5-85dc-c67a602d011e,14,Air Miles,0
+fcd39e00-6769-4d12-9915-0c9330aee408,1,Calculate Shift Weight,0
+fcd39e00-6769-4d12-9915-0c9330aee408,2,Calculate Non Response Weight,0
+fcd39e00-6769-4d12-9915-0c9330aee408,3,Calculate Minimums Weight,0
+fcd39e00-6769-4d12-9915-0c9330aee408,4,Calculate Traffic Weight,0
+fcd39e00-6769-4d12-9915-0c9330aee408,5,Calculate Unsampled Weight,0
+fcd39e00-6769-4d12-9915-0c9330aee408,6,Calculate Imbalance Weight,0
+fcd39e00-6769-4d12-9915-0c9330aee408,7,Calculate Final Weight,0
+fcd39e00-6769-4d12-9915-0c9330aee408,8,Stay Imputation,0
+fcd39e00-6769-4d12-9915-0c9330aee408,9,Fares Imputation,0
+fcd39e00-6769-4d12-9915-0c9330aee408,10,Spend Imputation,0
+fcd39e00-6769-4d12-9915-0c9330aee408,11,Rail Imputation,0
+fcd39e00-6769-4d12-9915-0c9330aee408,12,Regional Weight,0
+fcd39e00-6769-4d12-9915-0c9330aee408,13,Town Stay and Expenditure Imputation,0
+fcd39e00-6769-4d12-9915-0c9330aee408,14,Air Miles,0
