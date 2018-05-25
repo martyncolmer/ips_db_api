@@ -3,7 +3,7 @@ The Script to initialise the database and load in the data
 """
 
 from myapp.app import app
-from myapp.models import Run, db, ShiftData, RunStatus
+from myapp.models import Run, db, ShiftData, RunSteps
 import csv
 
 def main():
@@ -39,7 +39,7 @@ def main():
         for record in reader3:
             # Make use of Pythons dictionary unpacking
             # https://docs.python.org/3/tutorial/controlflow.html#unpacking-argument-lists
-            r = RunStatus(**record)
+            r = RunSteps(**record)
             db.session.add(r)
 
         db.session.commit()
