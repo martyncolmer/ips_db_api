@@ -23,6 +23,32 @@ class Run(db.Model):
 
 
 # Defining the Model class that maps to the database schema
+class RunSteps(db.Model):
+    RUN_ID = db.Column(db.String, primary_key=True)
+    NUMBER = db.Column(db.String(2), primary_key=True)
+    NAME = db.Column(db.String(50), primary_key=True)
+    STATUS = db.Column(db.String(1), primary_key=True)
+
+    # A helper function that defines how a record will be displayed
+    # in the console
+    def __repr__(self):
+        return '<RunStatus {RUN_ID}>'.format(name=self.RUN_ID)
+
+
+# Defining the Model class that maps to the database schema
+class ProcessVariables(db.Model):
+    RUN_ID = db.Column(db.String, primary_key=True)
+    PV_NAME = db.Column(db.String, primary_key=True)
+    PV_CONTENT = db.Column(db.String, primary_key=True)
+    PV_REASON = db.Column(db.String, primary_key=True)
+
+    # A helper function that defines how a record will be displayed
+    # in the console
+    def __repr__(self):
+        return '<Process_Variables {RUN_ID}>'.format(name=self.RUN_ID)
+
+
+# Defining the Model class that maps to the database schema
 class ShiftData(db.Model):
     RUN_ID = db.Column(db.String, primary_key=True)
     YEAR = db.Column(db.String(50), primary_key=True)
@@ -37,17 +63,62 @@ class ShiftData(db.Model):
     # A helper function that defines how a record will be displayed
     # in the console
     def __repr__(self):
-        return '<Shift_data {run_id}>'.format(name=self.run_id)
+        return '<ShiftData {RUN_ID}>'.format(name=self.RUN_ID)
 
 
 # Defining the Model class that maps to the database schema
-class RunSteps(db.Model):
+class TrafficData(db.Model):
     RUN_ID = db.Column(db.String, primary_key=True)
-    NUMBER = db.Column(db.String(2), primary_key=True)
-    NAME = db.Column(db.String(50), primary_key=True)
-    STATUS = db.Column(db.String(1), primary_key=True)
+    YEAR = db.Column(db.String(50), primary_key=True)
+    MONTH = db.Column(db.String(50), primary_key=True)
+    DATASOURCE = db.Column(db.String(50), primary_key=True)
+    PORTROUTE = db.Column(db.String(50), primary_key=True)
+    ARRIVEDEPART = db.Column(db.String(50), primary_key=True)
+    TRAFFICTOTAL = db.Column(db.String(50), primary_key=True)
+    PERIODSTART = db.Column(db.String(50), primary_key=True)
+    PERIODEND = db.Column(db.String(50), primary_key=True)
+    AM_PM_NIGHT = db.Column(db.String(50), primary_key=True)
+    HAUL = db.Column(db.String(50), primary_key=True)
+    VEHICLE = db.Column(db.String(50), primary_key=True)
 
     # A helper function that defines how a record will be displayed
     # in the console
     def __repr__(self):
-        return '<RunStatus {RUN_ID}>'.format(name=self.RUN_ID)
+        return '<TrafficData {RUN_ID}>'.format(name=self.RUN_ID)
+
+
+# Defining the Model class that maps to the database schema
+class NonResponseData(db.Model):
+    RUN_ID = db.Column(db.String, primary_key=True)
+    YEAR = db.Column(db.String(50), primary_key=True)
+    MONTH = db.Column(db.String(50), primary_key=True)
+    DATA_SOURCE_ID = db.Column(db.String(50), primary_key=True)
+    PORTROUTE = db.Column(db.String(50), primary_key=True)
+    WEEKDAY = db.Column(db.String(50), primary_key=True)
+    ARRIVEDEPART = db.Column(db.String(50), primary_key=True)
+    AM_PM_NIGHT = db.Column(db.String(50), primary_key=True)
+    SAMPINTERVAL = db.Column(db.String(50), primary_key=True)
+    MIGTOTAL = db.Column(db.String(50), primary_key=True)
+    ORDTOTAL = db.Column(db.String(50), primary_key=True)
+
+    # A helper function that defines how a record will be displayed
+    # in the console
+    def __repr__(self):
+        return '<NonResponseData {RUN_ID}>'.format(name=self.RUN_ID)
+
+
+# Defining the Model class that maps to the database schema
+class UnsampledOOHData(db.Model):
+    RUN_ID = db.Column(db.String, primary_key=True)
+    YEAR = db.Column(db.String(50), primary_key=True)
+    MONTH = db.Column(db.String(50), primary_key=True)
+    DATA_SOURCE_ID = db.Column(db.String(50), primary_key=True)
+    PORTROUTE = db.Column(db.String(50), primary_key=True)
+    REGION = db.Column(db.String(50), primary_key=True)
+    ARRIVEDEPART = db.Column(db.String(50), primary_key=True)
+    UNSAMP_TOTAL = db.Column(db.String(50), primary_key=True)
+
+    # A helper function that defines how a record will be displayed
+    # in the console
+    def __repr__(self):
+        return '<UnsampledOOHData {RUN_ID}>'.format(name=self.RUN_ID)

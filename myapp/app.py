@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, abort
 
-from myapp.models import db, Run, ShiftData, RunSteps
+from myapp.models import db, Run, ShiftData, RunSteps, ProcessVariables
 
 app = Flask(__name__)
 
@@ -234,6 +234,54 @@ def set_run_steps(run_id, value, step_number=None):
                     x.STATUS = value
             else:
                 x.STATUS = value
+
+    db.session.commit()
+
+    return "", 200
+
+
+@app.route('/process_variables', methods=['GET'])
+@app.route('/process_variables/<run_id>', methods=['GET'])
+def get_process_variables(run_id=None):
+    column_names = ['RUN_ID', 'PV_NAME', 'PV_CONTENT', 'PV_REASON']
+    # if a run id is provided search for this specific run
+    if run_id:
+        # Get records relating to that pv
+        data = ProcessVariables.query.filter_by(RUN_ID=run_id).all()
+    else:
+        # Get all records
+        data = ProcessVariables.query.all()
+
+    if not data:
+        abort(400)
+
+    output = []
+    for rec in data:
+        output_record = {}
+        for name in column_names:
+            output_record[name] = getattr(rec, name)
+        output.append(output_record)
+
+    return jsonify(output)
+
+
+@app.route('/process_variables/<run_id>/<pv_name>', methods=['PUT'])
+def update_process_variable(run_id, pv_name):
+
+    # the request should be json and an id must be present
+    if not request.json or 'PV_CONTENT' not in request.json:
+        abort(400)
+
+    # Get records relating to that pv
+    data = ProcessVariables.query.filter_by(RUN_ID=run_id).all()
+
+    if not data:
+        abort(400)
+
+    for rec in data:
+        if rec.PV_NAME in pv_name:
+            rec.PV_CONTENT = request.json.get('PV_CONTENT')
+            rec.PV_REASON = request.json.get('PV_REASON')
 
     db.session.commit()
 

@@ -46,7 +46,7 @@ def test_get_one_run(client):
     json_data = json.loads(rv.data)
     assert len(json_data) == 7
     assert '9e5c1872-3f8e-4ae5-85dc-c67a602d011e' == json_data['id']
-    assert 'Seed Run for IPS Test - Should be copied for testing - DO NOT START THIS RUN' == json_data['desc']
+    assert 'Test run that has actual data' == json_data['desc']
     assert '10022018' == json_data['start_date']
     assert '10022018' == json_data['end_date']
     assert '0' == json_data['type']
