@@ -3,7 +3,7 @@ The Script to initialise the database and load in the data
 """
 
 from myapp.app import app
-from myapp.models import Run, db, RunSteps, ProcessVariables, ShiftData, TrafficData, UnsampledOOHData, NonResponseData
+from myapp.models import Run, db, RunSteps, ProcessVariables, ShiftData, TrafficData, UnsampledOOHData, NonResponseData, ImbalanceWeight
 import csv
 
 def main():
@@ -80,6 +80,16 @@ def main():
             # Make use of Pythons dictionary unpacking
             # https://docs.python.org/3/tutorial/controlflow.html#unpacking-argument-lists
             r = UnsampledOOHData(**record)
+            db.session.add(r)
+
+        db.session.commit()
+
+        # Load in the data
+        reader8 = csv.DictReader(open('resources/IMBALANCE_WEIGHT.csv'))
+        for record in reader8:
+            # Make use of Pythons dictionary unpacking
+            # https://docs.python.org/3/tutorial/controlflow.html#unpacking-argument-lists
+            r = ImbalanceWeight(**record)
             db.session.add(r)
 
         db.session.commit()

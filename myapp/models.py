@@ -122,3 +122,17 @@ class UnsampledOOHData(db.Model):
     # in the console
     def __repr__(self):
         return '<UnsampledOOHData {RUN_ID}>'.format(name=self.RUN_ID)
+
+
+# Defining the Model class that maps to the database schema
+class ImbalanceWeight(db.Model):
+
+    RUN_ID = db.Column(db.String, primary_key=True)
+    FLOW = db.Column(db.String, primary_key=True)
+    SUM_PRIOR_WT = db.Column(db.String, primary_key=True)
+    SUM_IMBAL_WT = db.Column(db.String, primary_key=True)
+
+    # A helper function that defines how a record will be displayed
+    # in the console
+    def __repr__(self):
+        return '<ImbalanceWeight {RUN_ID}>'.format(name=self.RUN_ID)
