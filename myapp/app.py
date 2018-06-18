@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, abort
 
-from myapp.models import db, Run, ShiftData, RunSteps, ProcessVariables, ProcessVariableSet
+from myapp.models import db, Run, ShiftData, RunSteps, ProcessVariables, ProcessVariableSet, ImbalanceWeight
 
 app = Flask(__name__)
 
@@ -382,5 +382,39 @@ def get_shift_data(run_id=None, data_source='0'):
             abort(400)
 
         output = ds_filtered
+
+    return jsonify(output)
+
+
+@app.route('/IMBALANCE_WEIGHT', methods=['GET'])
+@app.route('/imbalance_weight', methods=['GET'])
+@app.route('/IMBALANCE_WEIGHT/<run_id>', methods=['GET'])
+@app.route('/imbalance_weight/<run_id>', methods=['GET'])
+def get_imbalance_weight(run_id=None):
+    column_names = ['RUN_ID', 'FLOW', 'SUM_PRIOR_WT', 'SUM_IMBAL_WT']
+
+    data = ImbalanceWeight.query.all()
+
+    if not data:
+        abort(400)
+
+    output = []
+    for rec in data:
+        output_record = {}
+        for name in column_names:
+            output_record[name] = getattr(rec, name)
+        output.append(output_record)
+
+    if run_id:
+        run_filtered = []
+
+        for rec in output:
+            if rec['RUN_ID'] == run_id:
+                run_filtered.append(rec)
+
+        if len(run_filtered) == 0:
+            abort(400)
+
+        output = run_filtered
 
     return jsonify(output)

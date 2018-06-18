@@ -5,7 +5,7 @@ The Script to initialise the database and load in the data
 from myapp.app import app
 from myapp.models import Run, db, RunSteps, ProcessVariables, \
     ShiftData, TrafficData, UnsampledOOHData, NonResponseData, \
-    ProcessVariableSet
+    ProcessVariableSet, ImbalanceWeight
 import csv
 
 
@@ -72,6 +72,13 @@ def main():
         reader7 = csv.DictReader(open('resources/UNSAMPLED_OOH_DATA.csv'))
         for record in reader7:
             r = UnsampledOOHData(**record)
+            db.session.add(r)
+        db.session.commit()
+
+        # Load in the data
+        reader8 = csv.DictReader(open('resources/IMBALANCE_WEIGHT.csv'))
+        for record in reader8:
+            r = ImbalanceWeight(**record)
             db.session.add(r)
         db.session.commit()
 
