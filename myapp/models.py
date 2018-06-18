@@ -36,6 +36,20 @@ class RunSteps(db.Model):
 
 
 # Defining the Model class that maps to the database schema
+class ProcessVariableSet(db.Model):
+    RUN_ID = db.Column(db.String, primary_key=True)
+    NAME = db.Column(db.String)
+    USER = db.Column(db.String)
+    START_DATE = db.Column(db.String)
+    END_DATE = db.Column(db.String)
+
+    # A helper function that defines how a record will be displayed
+    # in the console
+    def __repr__(self):
+        return '<Process_Variable Set {RUN_ID}>'.format(name=self.RUN_ID)
+
+
+# Defining the Model class that maps to the database schema
 class ProcessVariables(db.Model):
     RUN_ID = db.Column(db.String, primary_key=True)
     PV_NAME = db.Column(db.String, primary_key=True)
