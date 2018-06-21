@@ -425,13 +425,17 @@ def get_imbalance_weight(run_id=None):
 
 @app.route('/EXPORT_DATA_DOWNLOAD/<run_id>/<filename>/<source_table>/<date_created>', methods=['POST'])
 @app.route('/export_data_download/<run_id>/<filename>/<source_table>/<date_created>', methods=['POST'])
-def create_export_data_download(run_id, source_table, file_name, date_created):
-    # the request should be json and an id must be present
-    # if not request.json or 'id' not in request.json:
-    #     abort(400)
+# @app.route('/EXPORT_DATA_DOWNLOAD', methods=['POST'])
+# @app.route('/export_data_download', methods=['POST'])
+def create_export_data_download(run_id, data, file_name, source_table, date_created):
+    # the request should be json and an FILENAME must be present
+    if not request.json or 'FILENAME' not in request.json:
+        print("You got this far")
+        abort(400)
 
     # HARD-CODED for scope.  Need list of source_table names to correspond with routes
     # table = app.get('http://ips-db.apps.cf1.ons.statistics.gov.uk/' + source_table + '/' + run_id)
+    print("source_table was actually {} but it's being hard-coded to IMBALANCE_WEIGHT".format(source_table))
     table = app.get('http://ips-db.apps.cf1.ons.statistics.gov.uk/IMBALANCE_WEIGHT/' + run_id)
 
     # Convert json import to string
@@ -446,8 +450,8 @@ def create_export_data_download(run_id, source_table, file_name, date_created):
     return "", 201
 
 
-@app.route('/EXPORT_DATA_DOWNLOAD', methods=['GET'])
-@app.route('/export_data_download', methods=['GET'])
+# @app.route('/EXPORT_DATA_DOWNLOAD', methods=['GET'])
+# @app.route('/export_data_download', methods=['GET'])
 @app.route('/EXPORT_DATA_DOWNLOAD/<run_id>', methods=['GET'])
 @app.route('/export_data_download/<run_id>', methods=['GET'])
 def get_export_data_download(run_id=None):
