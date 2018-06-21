@@ -5,7 +5,7 @@ The Script to initialise the database and load in the data
 from myapp.app import app
 from myapp.models import Run, db, RunSteps, ProcessVariables, \
     ShiftData, TrafficData, UnsampledOOHData, NonResponseData, \
-    ProcessVariableSet, ImbalanceWeight
+    ProcessVariableSet, ImbalanceWeight, ExportDataDownload
 import csv
 
 
@@ -81,6 +81,13 @@ def main():
         reader8 = csv.DictReader(open('resources/IMBALANCE_WEIGHT.csv'))
         for record in reader8:
             r = ImbalanceWeight(**record)
+            db.session.add(r)
+        db.session.commit()
+
+        # Load EXPORT_DATA_DOWNLOAD data
+        reader9 = csv.DictReader(open('resources/EXPORT_DATA_DOWNLOAD.csv'))
+        for record in reader9:
+            r = ExportDataDownload(**record)
             db.session.add(r)
         db.session.commit()
 

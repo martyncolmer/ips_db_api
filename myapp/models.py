@@ -150,3 +150,18 @@ class ImbalanceWeight(db.Model):
     # in the console
     def __repr__(self):
         return '<ImbalanceWeight {RUN_ID}>'.format(name=self.RUN_ID)
+
+
+# Defining the Model class that maps to the database schema
+class ExportDataDownload(db.Model):
+
+    RUN_ID = db.Column(db.String, primary_key=True)
+    DOWNLOADABLE_DATA = db.Column(db.String, primary_key=True)
+    FILENAME = db.Column(db.String, primary_key=True)
+    SOURCE_TABLE = db.Column(db.String, primary_key=True)
+    DATE_CREATED = db.Column(db.String, primary_key=True)
+
+    # A helper function that defines how a record will be displayed
+    # in the console
+    def __repr__(self):
+        return '<ExportDataDownload {RUN_ID}>'.format(name=self.RUN_ID)
