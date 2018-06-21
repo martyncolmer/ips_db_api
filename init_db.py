@@ -47,6 +47,8 @@ def main():
             db.session.add(r)
         db.session.commit()
 
+        # DATA SETS
+
         # Load in shift data
         reader4 = csv.DictReader(open('resources/SHIFT_DATA.csv'))
         for record in reader4:
