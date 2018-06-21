@@ -49,17 +49,20 @@ def test_get_process_variable(client):
 
 
 def test_update_process_variable(client):
-    # updating non-existent id should fail
-    json_data = {'RUN_ID': '9e5c1872-3f8e-4ae5-85dc-c67a602d011e', 'PV_NAME': 'SHIFT_WT_PV', 'PV_CONTENT': 'Shift wt pv content = test',
+
+    json_data = {'RUN_ID': '9e5c1872-3f8e-4ae5-85dc-c67a602d011e',
+                 'PV_NAME': 'PV_1',
+                 'PV_CONTENT': 'if(test is True): PV_1 content = test',
                  'PV_REASON': 'Updated by automated test'}
-    rv = client.put('/process_variables/9e5c1872-3f8e-4ae5-85dc-c67a602d011e/SHIFT_WT_PV',
-                    data=json.dumps(json_data), content_type='application/json')
+
+    rv = client.put('/process_variables', json=json_data, content_type='application/json')
+
     assert rv.status_code == 200
 
     rv = client.get('/process_variables/9e5c1872-3f8e-4ae5-85dc-c67a602d011e')
     json_data = json.loads(rv.data)
 
     for x in json_data:
-        if x['PV_NAME'] == 'SHIFT_WT_PV':
-            assert x['PV_CONTENT'] == 'Shift wt pv content = test'
+        if x['PV_NAME'] == 'PV_1':
+            assert x['PV_CONTENT'] == 'if(test is True): PV_1 content = test'
             assert x['PV_REASON'] == 'Updated by automated test'
