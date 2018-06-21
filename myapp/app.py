@@ -1,6 +1,7 @@
+import json
 from flask import Flask, jsonify, request, abort
 
-from myapp.models import db, Run, ShiftData, RunSteps, ProcessVariables, ProcessVariableSet, ImbalanceWeight
+from myapp.models import db, Run, ShiftData, RunSteps, ProcessVariables, ProcessVariableSet, ImbalanceWeight, ExportDataDownload
 
 app = Flask(__name__)
 
@@ -405,6 +406,70 @@ def get_imbalance_weight(run_id=None):
             output_record[name] = getattr(rec, name)
         output.append(output_record)
 
+    if run_id:
+        run_filtered = []
+
+        for rec in output:
+            if rec['RUN_ID'] == run_id:
+                run_filtered.append(rec)
+
+        if len(run_filtered) == 0:
+            abort(400)
+
+        output = run_filtered
+
+    return jsonify(output)
+
+
+# EXPORT DATA
+
+@app.route('/EXPORT_DATA_DOWNLOAD/<run_id>/<filename>/<source_table>/<date_created>', methods=['POST'])
+@app.route('/export_data_download/<run_id>/<filename>/<source_table>/<date_created>', methods=['POST'])
+# @app.route('/EXPORT_DATA_DOWNLOAD', methods=['POST'])
+# @app.route('/export_data_download', methods=['POST'])
+def create_export_data_download(run_id, data, file_name, source_table, date_created):
+    # the request should be json and an FILENAME must be present
+    if not request.json or 'FILENAME' not in request.json:
+        print("You got this far")
+        abort(400)
+
+    # HARD-CODED for scope.  Need list of source_table names to correspond with routes
+    # table = app.get('http://ips-db.apps.cf1.ons.statistics.gov.uk/' + source_table + '/' + run_id)
+    print("source_table was actually {} but it's being hard-coded to IMBALANCE_WEIGHT".format(source_table))
+    table = app.get('http://ips-db.apps.cf1.ons.statistics.gov.uk/IMBALANCE_WEIGHT/' + run_id)
+
+    # Convert json import to string
+    data = json.dumps(table)
+
+    ExportDataDownload.RUN_ID = run_id
+    ExportDataDownload.DOWNLOADABLE_DATA = data
+    ExportDataDownload.FILENAME = file_name
+    ExportDataDownload.SOURCE_TABLE = source_table
+    ExportDataDownload.DATE_CREATED = date_created
+
+    return "", 201
+
+
+# @app.route('/EXPORT_DATA_DOWNLOAD', methods=['GET'])
+# @app.route('/export_data_download', methods=['GET'])
+@app.route('/EXPORT_DATA_DOWNLOAD/<run_id>', methods=['GET'])
+@app.route('/export_data_download/<run_id>', methods=['GET'])
+def get_export_data_download(run_id=None):
+    column_names = ['RUN_ID', 'DOWNLOADABLE_DATA', 'FILENAME', 'SOURCE_TABLE', 'DATE_CREATED']
+
+    data = ExportDataDownload.query.all()
+
+    if not data:
+        abort(400)
+
+    output = []
+    for rec in data:
+        output_record = {}
+        for name in column_names:
+            output_record[name] = getattr(rec, name)
+        output.append(output_record)
+
+    # Filter by run_id if provided
     if run_id:
         run_filtered = []
 
