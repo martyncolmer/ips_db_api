@@ -3,6 +3,7 @@ import tempfile
 import os
 import json
 import init_db
+from flask import jsonify
 
 from myapp import app as my_app
 
@@ -66,3 +67,24 @@ def test_get_shift_data_data_source(client):
     for x in json_data:
         assert '4' == x['DATA_SOURCE_ID']
 
+
+def test_import_shift_data(client):
+
+    json_data = []
+    rec1 = {'RUN_ID': 'Automated-Run_ID', 'YEAR': 'YEAR', 'MONTH': 'MONTH',
+                 'DATA_SOURCE_ID': 'DATA_SOURCE_ID', 'PORTROUTE': 'PORTROUTE', 'WEEKDAY': 'WEEKDAY',
+                 'ARRIVEDEPART': 'ARRIVEDEPART', 'TOTAL': 'TOTAL', 'AM_PM_NIGHT': 'AM_PM_NIGHT'}
+    rec2 = {'RUN_ID': 'Automated-Run_ID', 'YEAR': 'YEAR-2', 'MONTH': 'MONTH-2',
+                 'DATA_SOURCE_ID': 'DATA_SOURCE_ID-2', 'PORTROUTE': 'PORTROUTE-2', 'WEEKDAY': 'WEEKDAY-2',
+                 'ARRIVEDEPART': 'ARRIVEDEPART-2', 'TOTAL': 'TOTAL-2', 'AM_PM_NIGHT': 'AM_PM_NIGHT-2'}
+
+    json_data.append(rec1)
+    json_data.append(rec2)
+
+    rv = client.post('/shift_data/Automated-Run_ID', json=json_data, content_type='application/json')
+    assert rv.status_code == 200
+
+    rv = client.get('/SHIFT_DATA/Automated-Run_ID')
+
+    records = rv.json
+    assert len(records) == 2

@@ -85,7 +85,7 @@ class TrafficData(db.Model):
     RUN_ID = db.Column(db.String, primary_key=True)
     YEAR = db.Column(db.String(50), primary_key=True)
     MONTH = db.Column(db.String(50), primary_key=True)
-    DATASOURCE = db.Column(db.String(50), primary_key=True)
+    DATA_SOURCE_ID = db.Column(db.String(50), primary_key=True)
     PORTROUTE = db.Column(db.String(50), primary_key=True)
     ARRIVEDEPART = db.Column(db.String(50), primary_key=True)
     TRAFFICTOTAL = db.Column(db.String(50), primary_key=True)
