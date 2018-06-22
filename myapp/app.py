@@ -641,6 +641,8 @@ def get_unsampled_data(run_id=None, data_source='0'):
     return jsonify(output)
 
 
+# IMBALANCE WEIGHT
+
 @app.route('/IMBALANCE_WEIGHT', methods=['GET'])
 @app.route('/imbalance_weight', methods=['GET'])
 @app.route('/IMBALANCE_WEIGHT/<run_id>', methods=['GET'])
@@ -677,29 +679,40 @@ def get_imbalance_weight(run_id=None):
 
 # EXPORT DATA
 
-@app.route('/EXPORT_DATA_DOWNLOAD/<run_id>/<filename>/<source_table>/<date_created>', methods=['POST'])
-@app.route('/export_data_download/<run_id>/<filename>/<source_table>/<date_created>', methods=['POST'])
-# @app.route('/EXPORT_DATA_DOWNLOAD', methods=['POST'])
-# @app.route('/export_data_download', methods=['POST'])
-def create_export_data_download(run_id, data, file_name, source_table, date_created):
+# @app.route('/EXPORT_DATA_DOWNLOAD/<run_id>/<filename>/<source_table>/<date_created>', methods=['POST'])
+# @app.route('/export_data_download/<run_id>/<filename>/<source_table>/<date_created>', methods=['POST'])
+@app.route('/EXPORT_DATA_DOWNLOAD', methods=['POST'])
+@app.route('/export_data_download', methods=['POST'])
+@app.route('/EXPORT_DATA_DOWNLOAD/<run_id>', methods=['POST'])
+@app.route('/export_data_download/<run_id>', methods=['POST'])
+def create_export_data_download(run_id=None):
+    print("create_export_data_download")
     # the request should be json and an FILENAME must be present
+    print(request.json)
     if not request.json or 'FILENAME' not in request.json:
-        print("You got this far")
         abort(400)
 
     # HARD-CODED for scope.  Need list of source_table names to correspond with routes
     # table = app.get('http://ips-db.apps.cf1.ons.statistics.gov.uk/' + source_table + '/' + run_id)
-    print("source_table was actually {} but it's being hard-coded to IMBALANCE_WEIGHT".format(source_table))
-    table = app.get('http://ips-db.apps.cf1.ons.statistics.gov.uk/IMBALANCE_WEIGHT/' + run_id)
+    if run_id == None:
+        table = app.get('http://ips-db.apps.cf1.ons.statistics.gov.uk/IMBALANCE_WEIGHT')
+    else:
+        table = app.get('http://ips-db.apps.cf1.ons.statistics.gov.uk/IMBALANCE_WEIGHT/' + run_id)
 
     # Convert json import to string
+    print(table)
     data = json.dumps(table)
+    print(data)
 
-    ExportDataDownload.RUN_ID = run_id
-    ExportDataDownload.DOWNLOADABLE_DATA = data
-    ExportDataDownload.FILENAME = file_name
-    ExportDataDownload.SOURCE_TABLE = source_table
-    ExportDataDownload.DATE_CREATED = date_created
+    new_rec = ExportDataDownload(RUN_ID=request.json['RUN_ID'],
+                                 DOWNLOADABLE_DATA=data,
+                                 FILENAME=request.json['FILENAME'],
+                                 SOURCE_TABLE=request.json['SOURCE_TABLE'],
+                                 DATE_CREATED=request.json['DATE_CREATED'])
+    print(new_rec)
+
+    db.session.add(new_rec)
+    db.session.commit()
 
     return "", 201
 
@@ -708,6 +721,8 @@ def create_export_data_download(run_id, data, file_name, source_table, date_crea
 # @app.route('/export_data_download', methods=['GET'])
 @app.route('/EXPORT_DATA_DOWNLOAD/<run_id>', methods=['GET'])
 @app.route('/export_data_download/<run_id>', methods=['GET'])
+@app.route('/EXPORT_DATA_DOWNLOAD', methods=['GET'])
+@app.route('/export_data_download', methods=['GET'])
 def get_export_data_download(run_id=None):
     column_names = ['RUN_ID', 'DOWNLOADABLE_DATA', 'FILENAME', 'SOURCE_TABLE', 'DATE_CREATED']
 
@@ -753,3 +768,5 @@ def get_json():
     output.append(json_data2)
 
     return jsonify(output)
+
+

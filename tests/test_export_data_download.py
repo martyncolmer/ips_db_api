@@ -28,10 +28,9 @@ def test_get_export_data_download(client):
     rv = client.get('/EXPORT_DATA_DOWNLOAD')
     assert rv.status_code == 200
     json_data = json.loads(rv.data)
-    assert len(json_data) == 1
+    assert len(json_data) == 6
     for x in json_data:
-        assert 'f144ec22-921f-43ff-a93c-189695336580' == x['RUN_ID']
-        # assert 'RUN_ID,FLOW,SUM_PRIOR_WT,SUM_IMBAL_WT' == x['FILENAME']
+        assert x["SOURCE_TABLE"] == 'PS_IMBALANCE'
 
 
 def test_get_export_data_download_run_id(client):
@@ -47,3 +46,26 @@ def test_get_export_data_download_run_id(client):
     assert len(json_data) == 1
     for x in json_data:
         assert 'f144ec22-921f-43ff-a93c-189695336580' == x['RUN_ID']
+
+
+def test_post_export_data_download(client):
+
+    json_data = []
+    rec1 = {'DATE_CREATED': "2018-01-24 12:00:06",
+            'DOWNLOADABLE_DATA': "RUN_ID,FLOW,SUM_PRIOER_WT,SUM_IMNAL_WT",
+            'FILENAME': 'TestGet',
+            'RUN_ID': 'el_24_01_1988',
+            'SOURCE_TABLE': 'get_test_source_table'}
+
+    json_data.append(rec1)
+
+    rv = client.post('/export_data_download', json=json_data, content_type='application/json')
+    assert rv.status_code == 200
+
+    rv = client.get('/export_data_download')
+
+    records = rv.json
+    assert len(records) == 1
+
+
+
