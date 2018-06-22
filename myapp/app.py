@@ -1,5 +1,5 @@
 import json
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, redirect
 
 from myapp.models import db, Run, RunSteps, ProcessVariableSet, ProcessVariables, \
     ShiftData, NonResponseData, TrafficData, UnsampledOOHData, \
@@ -689,26 +689,26 @@ def create_export_data_download(run_id=None):
     print("create_export_data_download")
     # the request should be json and an FILENAME must be present
     print(request.json)
-    if not request.json or 'FILENAME' not in request.json:
+    if not request.json:
         abort(400)
+    json_data = request.json
 
     # HARD-CODED for scope.  Need list of source_table names to correspond with routes
     # table = app.get('http://ips-db.apps.cf1.ons.statistics.gov.uk/' + source_table + '/' + run_id)
-    if run_id == None:
-        table = app.get('http://ips-db.apps.cf1.ons.statistics.gov.uk/IMBALANCE_WEIGHT')
+    if not run_id:
+        response = get_imbalance_weight()
+        table = response.json
     else:
         table = app.get('http://ips-db.apps.cf1.ons.statistics.gov.uk/IMBALANCE_WEIGHT/' + run_id)
 
     # Convert json import to string
-    print(table)
     data = json.dumps(table)
-    print(data)
 
-    new_rec = ExportDataDownload(RUN_ID=request.json['RUN_ID'],
+    new_rec = ExportDataDownload(RUN_ID=json_data['RUN_ID'],
                                  DOWNLOADABLE_DATA=data,
-                                 FILENAME=request.json['FILENAME'],
-                                 SOURCE_TABLE=request.json['SOURCE_TABLE'],
-                                 DATE_CREATED=request.json['DATE_CREATED'])
+                                 FILENAME=json_data['FILENAME'],
+                                 SOURCE_TABLE=json_data['SOURCE_TABLE'],
+                                 DATE_CREATED=json_data['DATE_CREATED'])
     print(new_rec)
 
     db.session.add(new_rec)

@@ -164,4 +164,4 @@ class ExportDataDownload(db.Model):
     # A helper function that defines how a record will be displayed
     # in the console
     def __repr__(self):
-        return '<ExportDataDownload {RUN_ID}>'.format(name=self.RUN_ID)
+        return '<ExportDataDownload {'+self.RUN_ID+'}>'

@@ -50,22 +50,19 @@ def test_get_export_data_download_run_id(client):
 
 def test_post_export_data_download(client):
 
-    json_data = []
-    rec1 = {'DATE_CREATED': "2018-01-24 12:00:06",
+    json_data = {'DATE_CREATED': "2018-01-24 12:00:06",
             'DOWNLOADABLE_DATA': "RUN_ID,FLOW,SUM_PRIOER_WT,SUM_IMNAL_WT",
             'FILENAME': 'TestGet',
             'RUN_ID': 'el_24_01_1988',
             'SOURCE_TABLE': 'get_test_source_table'}
 
-    json_data.append(rec1)
-
     rv = client.post('/export_data_download', json=json_data, content_type='application/json')
-    assert rv.status_code == 200
+    assert rv.status_code == 201
 
     rv = client.get('/export_data_download')
 
     records = rv.json
-    assert len(records) == 1
+    assert len(records) == 7
 
 
 
