@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request, abort, redirect
 
 from myapp.models import db, Run, RunSteps, ProcessVariableSet, ProcessVariables, \
     ShiftData, NonResponseData, TrafficData, UnsampledOOHData, \
-    ImbalanceWeight, ExportDataDownload
+    ImbalanceWeight, ExportDataDownload, SurveySubsample
 
 app = Flask(__name__)
 
@@ -679,23 +679,31 @@ def get_imbalance_weight(run_id=None):
 
 # EXPORT DATA
 
-# @app.route('/EXPORT_DATA_DOWNLOAD/<run_id>/<filename>/<source_table>/<date_created>', methods=['POST'])
-# @app.route('/export_data_download/<run_id>/<filename>/<source_table>/<date_created>', methods=['POST'])
 @app.route('/EXPORT_DATA_DOWNLOAD', methods=['POST'])
 @app.route('/export_data_download', methods=['POST'])
-@app.route('/EXPORT_DATA_DOWNLOAD/<run_id>', methods=['POST'])
-@app.route('/export_data_download/<run_id>', methods=['POST'])
 def create_export_data_download(run_id=None):
-    print("create_export_data_download")
-    # the request should be json and an FILENAME must be present
-    print(request.json)
+    # function_name = {"Survey Subsample": None,
+    #                  "Final Weight Summary": None,
+    #                  "Shift": get_shift_data,
+    #                  "Non-Response": get_non_response_data,
+    #                  "Shift Weight Summary": None,
+    #                  "Non Response Weight Summary": None,
+    #                  "Minimum Weight Summary": None,
+    #                  "Traffic Weight Summary": get_traffic_data,
+    #                  "Unsampled Traffic Weight Summary": get_unsampled_data,
+    #                  "Imbalance Weight Summary": get_imbalance_weight}
+
+    # the request should be json
     if not request.json:
         abort(400)
-    json_data = request.json
 
-    # HARD-CODED for scope.  Need list of source_table names to correspond with routes
-    # table = app.get('http://ips-db.apps.cf1.ons.statistics.gov.uk/' + source_table + '/' + run_id)
+    # Get json dictionary and values
+    json_data = request.json
+    # table_name = json_data["SOURCE_TABLE"]
+
     if not run_id:
+        # Run Get function
+        # response = function_name[table_name]()
         response = get_imbalance_weight()
         table = response.json
     else:
@@ -766,6 +774,74 @@ def get_json():
 
     output.append(json_data)
     output.append(json_data2)
+
+    return jsonify(output)
+
+
+# SURVEY SUBSAMPLE
+
+@app.route('/SURVEY_SUBSAMPLE', methods=['GET'])
+@app.route('/survey_subsample', methods=['GET'])
+@app.route('/SURVEY_SUBSAMPLE/<run_id>', methods=['GET'])
+@app.route('/survey_subsample/<run_id>', methods=['GET'])
+def get_survey_subsample_data(run_id=None):
+    column_names = ['RUN_ID', 'SERIAL', 'AGE', 'AM_PM_NIGHT', 'ANYUNDER16', 'APORTLATDEG', 'APORTLATMIN', 'APORTLATSEC',
+                    'APORTLATNS', 'APORTLONDEG', 'APORTLONMIN', 'APORTLONSEC', 'APORTLONEW', 'ARRIVEDEPART', 'BABYFARE',
+                    'BEFAF', 'CHANGECODE', 'CHILDFARE', 'COUNTRYVISIT', 'CPORTLATDEG', 'CPORTLATMIN', 'CPORTLATSEC',
+                    'CPORTLATNS', 'CPORTLONDEG', 'CPORTLONMIN', 'CPORTLONSEC', 'CPORTLONEW', 'INTDATE', 'DAYTYPE',
+                    'DIRECTLEG', 'DVEXPEND', 'DVFARE', 'DVLINECODE', 'DVPACKAGE', 'DVPACKCOST', 'DVPERSONS',
+                    'DVPORTCODE', 'EXPENDCODE', 'EXPENDITURE', 'FARE', 'FAREK', 'FLOW', 'HAULKEY', 'INTENDLOS',
+                    'KIDAGE', 'LOSKEY', 'MAINCONTRA', 'MIGSI', 'INTMONTH', 'NATIONALITY', 'NATIONNAME', 'NIGHTS1',
+                    'NIGHTS2', 'NIGHTS3', 'NIGHTS4', 'NIGHTS5', 'NIGHTS6', 'NIGHTS7', 'NIGHTS8', 'NUMADULTS', 'NUMDAYS',
+                    'NUMNIGHTS', 'NUMPEOPLE', 'PACKAGEHOL', 'PACKAGEHOLUK', 'PERSONS', 'PORTROUTE', 'PACKAGE',
+                    'PROUTELATDEG', 'PROUTELATMIN', 'PROUTELATSEC', 'PROUTELATNS', 'PROUTELONDEG', 'PROUTELONMIN',
+                    'PROUTELONSEC', 'PROUTELONEW', 'PURPOSE', 'QUARTER', 'RESIDENCE', 'RESPNSE', 'SEX', 'SHIFTNO',
+                    'SHUTTLE', 'SINGLERETURN', 'TANDTSI', 'TICKETCOST', 'TOWNCODE1', 'TOWNCODE2', ' TOWNCODE3',
+                    'TOWNCODE4', 'TOWNCODE5', 'TOWNCODE6', 'TOWNCODE7', 'TOWNCODE8', 'TRANSFER', 'UKFOREIGN', 'VEHICLE',
+                    'VISITBEGAN', 'WELSHNIGHTS', 'WELSHTOWN', 'AM_PM_NIGHT_PV', 'APD_PV', 'ARRIVEDEPART_PV',
+                    'CROSSINGS_FLAG_PV', 'STAYIMPCTRYLEVEL1_PV', 'STAYIMPCTRYLEVEL2_PV', 'STAYIMPCTRYLEVEL3_PV',
+                    'STAYIMPCTRYLEVEL4_PV', 'DAY_PV', 'DISCNT_F1_PV', 'DISCNT_F2_PV', 'DISCNT_PACKAGE_COST_PV',
+                    'DUR1_PV', 'DUR2_PV', 'DUTY_FREE_PV', 'FAGE_PV', 'FARES_IMP_ELIGIBLE_PV', 'FARES_IMP_FLAG_PV',
+                    'FLOW_PV', 'FOOT_OR_VEHICLE_PV', 'HAUL_PV', 'IMBAL_CTRY_FACT_PV', 'IMBAL_CTRY_GRP_PV',
+                    'IMBAL_ELIGIBLE_PV', 'IMBAL_PORT_FACT_PV', 'IMBAL_PORT_GRP_PV', 'IMBAL_PORT_SUBGRP_PV', 'LOS_PV',
+                    'LOSDAYS_PV', 'MIG_FLAG_PV', 'MINS_CTRY_GRP_PV', 'MINS_CTRY_PORT_GRP_PV', 'MINS_FLAG_PV',
+                    'MINS_NAT_GRP_PV', 'MINS_PORT_GRP_PV', 'MINS_QUALITY_PV', 'NR_FLAG_PV', 'NR_PORT_GRP_PV',
+                    'OPERA_PV', 'OSPORT1_PV', 'OSPORT2_PV', 'OSPORT3_PV', 'OSPORT4_PV', 'PUR1_PV', 'PUR2_PV', 'PUR3_PV',
+                    'PURPOSE_PV', 'QMFARE_PV', 'RAIL_CNTRY_GRP_PV', 'RAIL_EXERCISE_PV', 'RAIL_IMP_ELIGIBLE_PV',
+                    'REG_IMP_ELIGIBLE_PV', 'SAMP_PORT_GRP_PV', 'SHIFT_FLAG_PV', 'SHIFT_PORT_GRP_PV',
+                    'SPEND_IMP_FLAG_PV', 'SPEND_IMP_ELIGIBLE_PV', 'STAY_IMP_ELIGIBLE_PV', 'STAY_IMP_FLAG_PV',
+                    'STAY_PURPOSE_GRP_PV', 'TOWNCODE_PV', 'TOWN_IMP_ELIGIBLE_PV', 'TYPE_PV', 'UK_OS_PV', 'UKPORT1_PV',
+                    'UKPORT2_PV', 'UKPORT3_PV', 'UKPORT4_PV', 'UNSAMP_PORT_GRP_PV', 'UNSAMP_REGION_GRP_PV',
+                    'WEEKDAY_END_PV', 'DIRECT', 'EXPENDITURE_WT', 'EXPENDITURE_WTK', 'FAREKEY', 'OVLEG', 'SPEND',
+                    'SPEND1', 'SPEND2', 'SPEND3', 'SPEND4', 'SPEND5', 'SPEND6', 'SPEND7', 'SPEND8', 'SPEND9',
+                    'SPENDIMPREASON', 'SPENDK', 'STAY', 'STAYK', 'STAY1K', 'STAY2K', 'STAY3K', 'STAY4K', 'STAY5K',
+                    'STAY6K', 'STAY7K', 'STAY8K', 'STAY9K', 'STAYTLY', 'STAY_WT', 'STAY_WTK', 'TYPEINTERVIEW', 'UKLEG',
+                    'VISIT_WT', 'VISIT_WTK', 'SHIFT_WT', 'NON_RESPONSE_WT', 'MINS_WT', 'TRAFFIC_WT',
+                    'UNSAMP_TRAFFIC_WT', 'IMBAL_WT', 'FINAL_WT']
+
+    data = SurveySubsample.query.all()
+
+    if not data:
+        abort(400)
+
+    output = []
+    for rec in data:
+        output_record = {}
+        for name in column_names:
+            output_record[name] = getattr(rec, name)
+        output.append(output_record)
+
+    if run_id:
+        run_filtered = []
+
+        for rec in output:
+            if rec['RUN_ID'] == run_id:
+                run_filtered.append(rec)
+
+        if len(run_filtered) == 0:
+            abort(400)
+
+        output = run_filtered
 
     return jsonify(output)
 

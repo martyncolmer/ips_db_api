@@ -56,6 +56,8 @@ def test_post_export_data_download(client):
             'RUN_ID': 'el_24_01_1988',
             'SOURCE_TABLE': 'get_test_source_table'}
 
+    print(type(json_data))
+
     rv = client.post('/export_data_download', json=json_data, content_type='application/json')
     assert rv.status_code == 201
 
