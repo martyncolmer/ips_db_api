@@ -745,7 +745,7 @@ def get_imbalance_weight(run_id=None):
     return jsonify(output)
 
 
-# EXPORT DATA
+# JACK - EXPORT DATA
 
 @app.route('/EXPORT_DATA_DOWNLOAD', methods=['POST'])
 @app.route('/export_data_download', methods=['POST'])
@@ -779,16 +779,12 @@ def create_export_data_download():
                                  FILENAME=json_data['FILENAME'],
                                  SOURCE_TABLE=json_data['SOURCE_TABLE'],
                                  DATE_CREATED=json_data['DATE_CREATED'])
-    print(new_rec)
-
     db.session.add(new_rec)
     db.session.commit()
 
     return "", 201
 
 
-# @app.route('/EXPORT_DATA_DOWNLOAD', methods=['GET'])
-# @app.route('/export_data_download', methods=['GET'])
 @app.route('/EXPORT_DATA_DOWNLOAD/<run_id>', methods=['GET'])
 @app.route('/export_data_download/<run_id>', methods=['GET'])
 @app.route('/EXPORT_DATA_DOWNLOAD', methods=['GET'])
