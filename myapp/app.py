@@ -1,5 +1,6 @@
 import json
 from flask import Flask, jsonify, request, abort, redirect
+import requests
 
 from myapp.models import db, Run, RunSteps, ProcessVariableSet, ProcessVariables, \
     ShiftData, NonResponseData, TrafficData, UnsampledOOHData, \
@@ -623,6 +624,7 @@ def delete_traffic_data(run_id=None):
 
 # UNSAMPLED OOH DATA
 
+
 @app.route('/UNSAMPLED_OOH_DATA/<run_id>', methods=['POST'])
 @app.route('/unsampled_ooh_data/<run_id>', methods=['POST'])
 def import_unsampled_data(run_id):
@@ -642,6 +644,7 @@ def import_unsampled_data(run_id):
                                ARRIVEDEPART=rec['ARRIVEDEPART'],
                                UNSAMP_TOTAL=rec['UNSAMP_TOTAL'])
         db.session.add(run)
+
     db.session.commit()
 
     return "", 200
@@ -698,7 +701,7 @@ def get_unsampled_data(run_id=None, data_source='0'):
 @app.route('/UNSAMPLED_OOH_DATA/<run_id>', methods=['DELETE'])
 @app.route('/unsampled_ooh_data/<run_id>', methods=['DELETE'])
 def delete_unsampled_data(run_id=None):
-    data = TrafficData.query.filter_by(RUN_ID=run_id).all()
+    data = UnsampledOOHData.query.filter_by(RUN_ID=run_id).all()
     for rec in data:
         db.session.delete(rec)
 
@@ -746,7 +749,7 @@ def get_imbalance_weight(run_id=None):
 
 @app.route('/EXPORT_DATA_DOWNLOAD', methods=['POST'])
 @app.route('/export_data_download', methods=['POST'])
-def create_export_data_download(run_id=None):
+def create_export_data_download():
     # function_name = {"Survey Subsample": None,
     #                  "Final Weight Summary": None,
     #                  "Shift": get_shift_data,
@@ -759,26 +762,20 @@ def create_export_data_download(run_id=None):
     #                  "Imbalance Weight Summary": get_imbalance_weight}
 
     # the request should be json
-    if not request.json:
+    if not request.data:
         abort(400)
 
     # Get json dictionary and values
-    json_data = request.json
+    json_data = json.loads(request.data)
     # table_name = json_data["SOURCE_TABLE"]
 
-    if not run_id:
-        # Run Get function
-        # response = function_name[table_name]()
-        response = get_imbalance_weight()
-        table = response.json
-    else:
-        table = app.get('http://ips-db.apps.cf1.ons.statistics.gov.uk/IMBALANCE_WEIGHT/' + run_id)
+    table = requests.get('http://ips-db.apps.cf1.ons.statistics.gov.uk/IMBALANCE_WEIGHT/' + json_data['RUN_ID'])
 
+    table_data = table.text
     # Convert json import to string
-    data = json.dumps(table)
 
     new_rec = ExportDataDownload(RUN_ID=json_data['RUN_ID'],
-                                 DOWNLOADABLE_DATA=data,
+                                 DOWNLOADABLE_DATA=table_data,
                                  FILENAME=json_data['FILENAME'],
                                  SOURCE_TABLE=json_data['SOURCE_TABLE'],
                                  DATE_CREATED=json_data['DATE_CREATED'])
@@ -824,7 +821,8 @@ def get_export_data_download(run_id=None):
 
         output = run_filtered
 
-    return jsonify(output)
+    json_output = jsonify(output)
+    return json_output
 
 
 @app.route('/test_json', methods=['GET'])

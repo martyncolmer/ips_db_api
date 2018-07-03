@@ -50,16 +50,18 @@ def test_get_export_data_download_run_id(client):
 
 def test_post_export_data_download(client):
 
-    json_data = {'DATE_CREATED': "2018-01-24 12:00:06",
-            'DOWNLOADABLE_DATA': "RUN_ID,FLOW,SUM_PRIOER_WT,SUM_IMNAL_WT",
-            'FILENAME': 'TestGet',
-            'RUN_ID': 'el_24_01_1988',
-            'SOURCE_TABLE': 'get_test_source_table'}
+    json_data = {'DATE_CREATED': '2018-01-24 12:00:06',
+                 'DOWNLOADABLE_DATA': 'RUN_ID,FLOW,SUM_PRIOR_WT,SUM_IMBAL_WT',
+                 'FILENAME': 'TEST_FILE_NAME',
+                 'RUN_ID': '9e5c1872-3f8e-4ae5-85dc-c67a602d011e',
+                 'SOURCE_TABLE': 'IMBALANCE_WEIGHT'}
 
-    print(type(json_data))
+    json_string = json.dumps(json_data)
+    print(json_string)
 
-    rv = client.post('/export_data_download', json=json_data, content_type='application/json')
-    assert rv.status_code == 201
+    response = client.post('/export_data_download', data=json_string)
+
+    assert response.status_code == 201
 
     rv = client.get('/export_data_download')
 

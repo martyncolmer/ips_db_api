@@ -77,7 +77,7 @@ def test_import_unsampled_ooh_data(client):
     json_data.append(rec1)
     json_data.append(rec2)
 
-    rv = client.post('/unsampled_ooh_data/Automated-Run_ID', json=json_data, content_type='application/json')
+    rv = client.post('/unsampled_ooh_data/Automated-Run_ID', json=json_data)
     assert rv.status_code == 200
 
     rv = client.get('/unsampled_ooh_data/Automated-Run_ID')
