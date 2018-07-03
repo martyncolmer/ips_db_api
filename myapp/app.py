@@ -261,27 +261,47 @@ def update_pv_set(run_id, pv_name):
 
 # PROCESS VARIABLES
 
-@app.route('/process_variables/<run_id>/<template_id>', methods=['POST'])
-def create_process_variables(run_id, template_id):
+@app.route('/process_variables/<run_id>', methods=['POST'])
+def create_process_variables(run_id):
 
-    # Get the process variables records associated with the template id
-    data = ProcessVariables.query.filter_by(RUN_ID=template_id).all()
-
-    # Quit if no date is returned (the template id has no associated process variables)
-    if not data:
+    if not request.json:
         abort(400)
 
-    # Loop through and copy the template into the new pv set using the run id specified.
+    data = request.json
+
     for rec in data:
         new_pv = ProcessVariables(RUN_ID=run_id,
-                                  PV_NAME=rec.PV_NAME,
-                                  PV_CONTENT=rec.PV_CONTENT,
-                                  PV_REASON=rec.PV_REASON)
+                                  PV_NAME=rec['PV_NAME'],
+                                  PV_CONTENT=rec['PV_CONTENT'],
+                                  PV_REASON=rec['PV_REASON'])
         db.session.add(new_pv)
-
     db.session.commit()
 
     return "", 201
+
+# Old method copying from tamplate
+
+# @app.route('/process_variables/<run_id>/<template_id>', methods=['POST'])
+# def create_process_variables(run_id, template_id):
+#
+#     # Get the process variables records associated with the template id
+#     data = ProcessVariables.query.filter_by(RUN_ID=template_id).all()
+#
+#     # Quit if no date is returned (the template id has no associated process variables)
+#     if not data:
+#         abort(400)
+#
+#     # Loop through and copy the template into the new pv set using the run id specified.
+#     for rec in data:
+#         new_pv = ProcessVariables(RUN_ID=run_id,
+#                                   PV_NAME=rec.PV_NAME,
+#                                   PV_CONTENT=rec.PV_CONTENT,
+#                                   PV_REASON=rec.PV_REASON)
+#         db.session.add(new_pv)
+#
+#     db.session.commit()
+#
+#     return "", 201
 
 
 @app.route('/process_variables', methods=['GET'])
@@ -346,10 +366,10 @@ def import_shift_data(run_id):
     data = request.json
 
     for rec in data:
-        run = ShiftData(RUN_ID=rec['RUN_ID'],
+        run = ShiftData(RUN_ID=run_id,
                         YEAR=rec['YEAR'],
                         MONTH=rec['MONTH'],
-                        DATA_SOURCE_ID=rec['DATA_SOURCE_ID'],
+                        DATASOURCE=rec['DATASOURCE'],
                         PORTROUTE=rec['PORTROUTE'],
                         WEEKDAY=rec['WEEKDAY'],
                         ARRIVEDEPART=rec['ARRIVEDEPART'],
@@ -368,7 +388,7 @@ def import_shift_data(run_id):
 @app.route('/SHIFT_DATA/<run_id>/<data_source>', methods=['GET'])
 @app.route('/shift_data/<run_id>/<data_source>', methods=['GET'])
 def get_shift_data(run_id=None, data_source='0'):
-    column_names = ['RUN_ID', 'YEAR', 'MONTH', 'DATA_SOURCE_ID', 'PORTROUTE', 'WEEKDAY', 'ARRIVEDEPART', 'TOTAL',
+    column_names = ['RUN_ID', 'YEAR', 'MONTH', 'DATASOURCE', 'PORTROUTE', 'WEEKDAY', 'ARRIVEDEPART', 'TOTAL',
                     'AM_PM_NIGHT']
 
     data = ShiftData.query.all()
@@ -399,7 +419,7 @@ def get_shift_data(run_id=None, data_source='0'):
         ds_filtered = []
 
         for rec in output:
-            if rec['DATA_SOURCE_ID'] == data_source:
+            if rec['DATASOURCE'] == data_source:
                 ds_filtered.append(rec)
 
         if len(ds_filtered) == 0:
@@ -410,7 +430,19 @@ def get_shift_data(run_id=None, data_source='0'):
     return jsonify(output)
 
 
+@app.route('/SHIFT_DATA/<run_id>', methods=['DELETE'])
+@app.route('/shift_data/<run_id>', methods=['DELETE'])
+def delete_shift_data(run_id=None):
+    data = ShiftData.query.filter_by(RUN_ID=run_id).all()
+    for rec in data:
+        db.session.delete(rec)
+
+    db.session.commit()
+
+    return "", 200
+
 # NON RESPONSE DATA
+
 
 @app.route('/NON_RESPONSE_DATA/<run_id>', methods=['POST'])
 @app.route('/non_response_data/<run_id>', methods=['POST'])
@@ -422,10 +454,10 @@ def import_non_response_data(run_id):
     data = request.json
 
     for rec in data:
-        run = NonResponseData(RUN_ID=rec['RUN_ID'],
+        run = NonResponseData(RUN_ID=run_id,
                               YEAR=rec['YEAR'],
                               MONTH=rec['MONTH'],
-                              DATA_SOURCE_ID=rec['DATA_SOURCE_ID'],
+                              DATASOURCE=rec['DATASOURCE'],
                               PORTROUTE=rec['PORTROUTE'],
                               WEEKDAY=rec['WEEKDAY'],
                               ARRIVEDEPART=rec['ARRIVEDEPART'],
@@ -446,7 +478,7 @@ def import_non_response_data(run_id):
 @app.route('/NON_RESPONSE_DATA/<run_id>/<data_source>', methods=['GET'])
 @app.route('/non_response_data/<run_id>/<data_source>', methods=['GET'])
 def get_non_response_data(run_id=None, data_source='0'):
-    column_names = ['RUN_ID', 'YEAR', 'MONTH', 'DATA_SOURCE_ID', 'PORTROUTE', 'WEEKDAY', 'ARRIVEDEPART', 'AM_PM_NIGHT',
+    column_names = ['RUN_ID', 'YEAR', 'MONTH', 'DATASOURCE', 'PORTROUTE', 'WEEKDAY', 'ARRIVEDEPART', 'AM_PM_NIGHT',
                     'SAMPINTERVAL', 'MIGTOTAL', 'ORDTOTAL']
 
     data = NonResponseData.query.all()
@@ -477,7 +509,7 @@ def get_non_response_data(run_id=None, data_source='0'):
         ds_filtered = []
 
         for rec in output:
-            if rec['DATA_SOURCE_ID'] == data_source:
+            if rec['DATASOURCE'] == data_source:
                 ds_filtered.append(rec)
 
         if len(ds_filtered) == 0:
@@ -487,6 +519,17 @@ def get_non_response_data(run_id=None, data_source='0'):
 
     return jsonify(output)
 
+
+@app.route('/NON_RESPONSE_DATA/<run_id>', methods=['DELETE'])
+@app.route('/non_response_data/<run_id>', methods=['DELETE'])
+def delete_non_response_data(run_id=None):
+    data = NonResponseData.query.filter_by(RUN_ID=run_id).all()
+    for rec in data:
+        db.session.delete(rec)
+
+    db.session.commit()
+
+    return "", 200
 
 # TRAFFIC DATA
 
@@ -500,10 +543,10 @@ def import_traffic_data(run_id):
     data = request.json
 
     for rec in data:
-        run = TrafficData(RUN_ID=rec['RUN_ID'],
+        run = TrafficData(RUN_ID=run_id,
                           YEAR=rec['YEAR'],
                           MONTH=rec['MONTH'],
-                          DATA_SOURCE_ID=rec['DATA_SOURCE_ID'],
+                          DATASOURCE=rec['DATASOURCE'],
                           PORTROUTE=rec['PORTROUTE'],
                           ARRIVEDEPART=rec['ARRIVEDEPART'],
                           TRAFFICTOTAL=rec['TRAFFICTOTAL'],
@@ -511,7 +554,7 @@ def import_traffic_data(run_id):
                           PERIODEND=rec['PERIODEND'],
                           AM_PM_NIGHT=rec['AM_PM_NIGHT'],
                           HAUL=rec['HAUL'],
-                          VEHICLE=rec['VEHICLE'])
+                          VEHICLE='')
         db.session.add(run)
     db.session.commit()
 
@@ -525,7 +568,7 @@ def import_traffic_data(run_id):
 @app.route('/TRAFFIC_DATA/<run_id>/<data_source>', methods=['GET'])
 @app.route('/traffic_data/<run_id>/<data_source>', methods=['GET'])
 def get_traffic_data(run_id=None, data_source='0'):
-    column_names = ['RUN_ID', 'YEAR', 'MONTH', 'DATA_SOURCE_ID', 'PORTROUTE', 'ARRIVEDEPART', 'TRAFFICTOTAL',
+    column_names = ['RUN_ID', 'YEAR', 'MONTH', 'DATASOURCE', 'PORTROUTE', 'ARRIVEDEPART', 'TRAFFICTOTAL',
                     'PERIODSTART', 'PERIODEND', 'AM_PM_NIGHT', 'HAUL', 'VEHICLE']
 
     data = TrafficData.query.all()
@@ -556,7 +599,7 @@ def get_traffic_data(run_id=None, data_source='0'):
         ds_filtered = []
 
         for rec in output:
-            if rec['DATA_SOURCE_ID'] == data_source:
+            if rec['DATASOURCE'] == data_source:
                 ds_filtered.append(rec)
 
         if len(ds_filtered) == 0:
@@ -566,6 +609,17 @@ def get_traffic_data(run_id=None, data_source='0'):
 
     return jsonify(output)
 
+
+@app.route('/TRAFFIC_DATA/<run_id>', methods=['DELETE'])
+@app.route('/traffic_data/<run_id>', methods=['DELETE'])
+def delete_traffic_data(run_id=None):
+    data = TrafficData.query.filter_by(RUN_ID=run_id).all()
+    for rec in data:
+        db.session.delete(rec)
+
+    db.session.commit()
+
+    return "", 200
 
 # UNSAMPLED OOH DATA
 
@@ -579,10 +633,10 @@ def import_unsampled_data(run_id):
     data = request.json
 
     for rec in data:
-        run = UnsampledOOHData(RUN_ID=rec['RUN_ID'],
+        run = UnsampledOOHData(RUN_ID=run_id,
                                YEAR=rec['YEAR'],
                                MONTH=rec['MONTH'],
-                               DATA_SOURCE_ID=rec['DATA_SOURCE_ID'],
+                               DATASOURCE=rec['DATASOURCE'],
                                PORTROUTE=rec['PORTROUTE'],
                                REGION=rec['REGION'],
                                ARRIVEDEPART=rec['ARRIVEDEPART'],
@@ -600,7 +654,7 @@ def import_unsampled_data(run_id):
 @app.route('/UNSAMPLED_OOH_DATA/<run_id>/<data_source>', methods=['GET'])
 @app.route('/unsampled_ooh_data/<run_id>/<data_source>', methods=['GET'])
 def get_unsampled_data(run_id=None, data_source='0'):
-    column_names = ['RUN_ID', 'YEAR', 'MONTH', 'DATA_SOURCE_ID', 'PORTROUTE', 'REGION', 'ARRIVEDEPART', 'UNSAMP_TOTAL']
+    column_names = ['RUN_ID', 'YEAR', 'MONTH', 'DATASOURCE', 'PORTROUTE', 'REGION', 'ARRIVEDEPART', 'UNSAMP_TOTAL']
 
     data = UnsampledOOHData.query.all()
 
@@ -630,7 +684,7 @@ def get_unsampled_data(run_id=None, data_source='0'):
         ds_filtered = []
 
         for rec in output:
-            if rec['DATA_SOURCE_ID'] == data_source:
+            if rec['DATASOURCE'] == data_source:
                 ds_filtered.append(rec)
 
         if len(ds_filtered) == 0:
@@ -640,6 +694,17 @@ def get_unsampled_data(run_id=None, data_source='0'):
 
     return jsonify(output)
 
+
+@app.route('/UNSAMPLED_OOH_DATA/<run_id>', methods=['DELETE'])
+@app.route('/unsampled_ooh_data/<run_id>', methods=['DELETE'])
+def delete_unsampled_data(run_id=None):
+    data = TrafficData.query.filter_by(RUN_ID=run_id).all()
+    for rec in data:
+        db.session.delete(rec)
+
+    db.session.commit()
+
+    return "", 200
 
 # IMBALANCE WEIGHT
 
@@ -766,10 +831,10 @@ def get_export_data_download(run_id=None):
 def get_json():
     output = []
     json_data = {'RUN_ID': 'Automated-Run_ID', 'YEAR': 'YEAR', 'MONTH': 'MONTH',
-                 'DATA_SOURCE_ID': 'DATA_SOURCE_ID', 'PORTROUTE': 'PORTROUTE', 'WEEKDAY': 'WEEKDAY',
+                 'DATASOURCE': 'DATASOURCE', 'PORTROUTE': 'PORTROUTE', 'WEEKDAY': 'WEEKDAY',
                  'ARRIVEDEPART': 'ARRIVEDEPART', 'TOTAL': 'TOTAL', 'AM_PM_NIGHT': 'AM_PM_NIGHT'}
     json_data2 = {'RUN_ID': 'Automated-Run_ID', 'YEAR': 'YEAR-2', 'MONTH': 'MONTH-2',
-                 'DATA_SOURCE_ID': 'DATA_SOURCE_ID-2', 'PORTROUTE': 'PORTROUTE-2', 'WEEKDAY': 'WEEKDAY-2',
+                 'DATASOURCE': 'DATASOURCE-2', 'PORTROUTE': 'PORTROUTE-2', 'WEEKDAY': 'WEEKDAY-2',
                  'ARRIVEDEPART': 'ARRIVEDEPART-2', 'TOTAL': 'TOTAL-2', 'AM_PM_NIGHT': 'AM_PM_NIGHT-2'}
 
     output.append(json_data)
