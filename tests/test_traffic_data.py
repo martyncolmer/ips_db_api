@@ -62,13 +62,13 @@ def test_get_traffic_data_data_source(client):
 def test_import_traffic_data(client):
 
     json_data = []
-    rec1 = {'RUN_ID': 'Automated-Run_ID', 'YEAR': 'YEAR', 'MONTH': 'MONTH',
-            'DATA_SOURCE_ID': 'DATA_SOURCE_ID', 'PORTROUTE': 'PORTROUTE', 'ARRIVEDEPART': 'ARRIVEDEPART',
+    rec1 = {'YEAR': '2017', 'MONTH': '1',
+            'DATASOURCE': 'Sea', 'PORTROUTE': '611', 'ARRIVEDEPART': '1',
             'TRAFFICTOTAL': 'TRAFFICTOTAL', 'PERIODSTART': 'PERIODSTART', 'PERIODEND': 'PERIODEND',
             'AM_PM_NIGHT': 'AM_PM_NIGHT', 'HAUL': 'HAUL', 'VEHICLE': 'VEHICLE'}
 
     rec2 = {'RUN_ID': 'Automated-Run_ID', 'YEAR': 'YEAR2', 'MONTH': 'MONTH2',
-            'DATA_SOURCE_ID': 'DATA_SOURCE_ID2', 'PORTROUTE': 'PORTROUTE2', 'ARRIVEDEPART': 'ARRIVEDEPART2',
+            'DATASOURCE': 'DATASOURCE2', 'PORTROUTE': 'PORTROUTE2', 'ARRIVEDEPART': 'ARRIVEDEPART2',
             'TRAFFICTOTAL': 'TRAFFICTOTAL2', 'PERIODSTART': 'PERIODSTART2', 'PERIODEND': 'PERIODEND2',
             'AM_PM_NIGHT': 'AM_PM_NIGHT2', 'HAUL': 'HAUL2', 'VEHICLE': 'VEHICLE2'}
 

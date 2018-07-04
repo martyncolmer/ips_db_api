@@ -65,26 +65,43 @@ def test_get_shift_data_data_source(client):
     json_data = json.loads(rv.data)
     assert len(json_data) == 1000
     for x in json_data:
-        assert '4' == x['DATA_SOURCE_ID']
+        assert '4' == x['DATASOURCE']
 
 
 def test_import_shift_data(client):
 
     json_data = []
     rec1 = {'RUN_ID': 'Automated-Run_ID', 'YEAR': 'YEAR', 'MONTH': 'MONTH',
-                 'DATA_SOURCE_ID': 'DATA_SOURCE_ID', 'PORTROUTE': 'PORTROUTE', 'WEEKDAY': 'WEEKDAY',
+                 'DATASOURCE': 'DATASOURCE', 'PORTROUTE': 'PORTROUTE', 'WEEKDAY': 'WEEKDAY',
                  'ARRIVEDEPART': 'ARRIVEDEPART', 'TOTAL': 'TOTAL', 'AM_PM_NIGHT': 'AM_PM_NIGHT'}
     rec2 = {'RUN_ID': 'Automated-Run_ID', 'YEAR': 'YEAR-2', 'MONTH': 'MONTH-2',
-                 'DATA_SOURCE_ID': 'DATA_SOURCE_ID-2', 'PORTROUTE': 'PORTROUTE-2', 'WEEKDAY': 'WEEKDAY-2',
+                 'DATASOURCE': 'DATASOURCE-2', 'PORTROUTE': 'PORTROUTE-2', 'WEEKDAY': 'WEEKDAY-2',
                  'ARRIVEDEPART': 'ARRIVEDEPART-2', 'TOTAL': 'TOTAL-2', 'AM_PM_NIGHT': 'AM_PM_NIGHT-2'}
 
     json_data.append(rec1)
     json_data.append(rec2)
 
-    rv = client.post('/shift_data/Automated-Run_ID', json=json_data, content_type='application/json')
+    #rv = client.post('/shift_data/Automated-Run_ID', json=json_data, content_type='application/json')
+    rv = client.post('/shift_data/Automated-Run_ID', json=json_data)
     assert rv.status_code == 200
 
     rv = client.get('/SHIFT_DATA/Automated-Run_ID')
 
     records = rv.json
     assert len(records) == 2
+
+
+def test_delete_shift_data(client):
+
+    rv = client.get('/SHIFT_DATA/9e5c1872-3f8e-4ae5-85dc-c67a602d011e')
+    assert rv.status_code == 200
+    json_data = json.loads(rv.data)
+    original_count = len(json_data)
+    assert original_count == 1000
+
+    # Invalid run_id, valid data_source
+    rv = client.delete('/SHIFT_DATA/9e5c1872-3f8e-4ae5-85dc-c67a602d011e')
+    assert rv.status_code == 200
+
+    rv = client.get('/SHIFT_DATA/9e5c1872-3f8e-4ae5-85dc-c67a602d011e')
+    assert rv.status_code == 400

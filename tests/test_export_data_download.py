@@ -28,10 +28,9 @@ def test_get_export_data_download(client):
     rv = client.get('/EXPORT_DATA_DOWNLOAD')
     assert rv.status_code == 200
     json_data = json.loads(rv.data)
-    assert len(json_data) == 1
+    assert len(json_data) == 6
     for x in json_data:
-        assert 'f144ec22-921f-43ff-a93c-189695336580' == x['RUN_ID']
-        # assert 'RUN_ID,FLOW,SUM_PRIOR_WT,SUM_IMBAL_WT' == x['FILENAME']
+        assert x["SOURCE_TABLE"] == 'PS_IMBALANCE'
 
 
 def test_get_export_data_download_run_id(client):
@@ -47,3 +46,51 @@ def test_get_export_data_download_run_id(client):
     assert len(json_data) == 1
     for x in json_data:
         assert 'f144ec22-921f-43ff-a93c-189695336580' == x['RUN_ID']
+
+
+def test_get_export_data_download_run_id_file_name_source_table(client):
+
+    # Invalid run_id, file_name and source data
+    rv = client.get('/export_data_download/9e5c1872-3f8e-4ae5-85dc-c67a602d011e/thisisnotafilename9995/thisiswrongdata9995')
+    assert rv.status_code == 400
+
+    # Valid run_id, file_name and source_data
+    rv = client.get('/export_data_download/9e5c1872-3f8e-4ae5-85dc-c67a602d011e/SomethingElse/PS_IMBALANCE')
+    assert rv.status_code == 200
+    json_data = json.loads(rv.data)
+    assert '9e5c1872-3f8e-4ae5-85dc-c67a602d011e' == json_data['RUN_ID']
+    assert 'SomethingElse' == json_data['FILENAME']
+    assert 'PS_IMBALANCE' == json_data['SOURCE_TABLE']
+
+    # Valid run_id
+    rv = client.get('/EXPORT_DATA_DOWNLOAD/f144ec22-921f-43ff-a93c-189695336580')
+    assert rv.status_code == 200
+    json_data = json.loads(rv.data)
+    assert len(json_data) == 1
+    for x in json_data:
+        assert 'f144ec22-921f-43ff-a93c-189695336580' == x['RUN_ID']
+
+
+
+def test_post_export_data_download(client):
+
+    json_data = {'DATE_CREATED': '2018-01-24 12:00:06',
+                 'DOWNLOADABLE_DATA': 'RUN_ID,FLOW,SUM_PRIOR_WT,SUM_IMBAL_WT',
+                 'FILENAME': 'TEST_FILE_NAME',
+                 'RUN_ID': '9e5c1872-3f8e-4ae5-85dc-c67a602d011e',
+                 'SOURCE_TABLE': 'IMBALANCE_WEIGHT'}
+
+    json_string = json.dumps(json_data)
+    print(json_string)
+
+    response = client.post('/export_data_download', data=json_string)
+
+    assert response.status_code == 201
+
+    rv = client.get('/export_data_download')
+
+    records = rv.json
+    assert len(records) == 7
+
+
+
