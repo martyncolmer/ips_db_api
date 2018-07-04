@@ -789,7 +789,9 @@ def create_export_data_download():
 @app.route('/export_data_download/<run_id>', methods=['GET'])
 @app.route('/EXPORT_DATA_DOWNLOAD', methods=['GET'])
 @app.route('/export_data_download', methods=['GET'])
-def get_export_data_download(run_id=None):
+@app.route('/EXPORT_DATA_DOWNLOAD/<run_id>/<file_name>/<source_table>', methods=['GET'])
+@app.route('/export_data_download/<run_id>/<file_name>/<source_table>', methods=['GET'])
+def get_export_data_download(run_id=None, file_name=None, source_table=None):
     column_names = ['RUN_ID', 'DOWNLOADABLE_DATA', 'FILENAME', 'SOURCE_TABLE', 'DATE_CREATED']
 
     data = ExportDataDownload.query.all()
@@ -816,6 +818,20 @@ def get_export_data_download(run_id=None):
             abort(400)
 
         output = run_filtered
+
+    # Filter by run_id, file_name and source table if provided
+    if run_id and file_name:
+        run_filtered = ""
+
+        for rec in output:
+            if rec['RUN_ID'] == run_id and rec['FILENAME'] == file_name and rec['SOURCE_TABLE'] == source_table:
+                run_filtered = rec
+
+        if len(run_filtered) == 0:
+            abort(400)
+
+        output = run_filtered
+
 
     json_output = jsonify(output)
     return json_output
