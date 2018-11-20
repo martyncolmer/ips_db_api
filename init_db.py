@@ -29,7 +29,7 @@ def main():
         # Load in run step data
         reader2 = csv.DictReader(open('resources/run_steps.csv'))
         for record in reader2:
-            r = RunSteps(**record)
+            # r = RunSteps(**record)
             db.session.add(r)
         db.session.commit()
 

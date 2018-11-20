@@ -3,6 +3,6 @@ applications:
 - name: ips-db
   memory: 512M
   instances: 1
-  command: python init_db.py && exec flask run --host 0.0.0.0 --port $PORT --with-threads
+  command: python models.py && exec flask run --host 0.0.0.0 --port $PORT --with-threads
   env:
     FLASK_APP: myapp/app.py
