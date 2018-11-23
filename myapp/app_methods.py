@@ -1,6 +1,6 @@
-#import pyodbc
+import pyodbc
 import os
-import pytds
+#import pytds
 
 def get_connection():
     """
@@ -25,8 +25,8 @@ def get_connection():
 
     # Attempt to connect to the database
     try:
-        conn = 0 #pyodbc.connect(driver="{SQL Server}", server=server, database=database, uid=username, pwd=password, autocommit=True)
-        conn = pytds.connect(dsn=server, database=database, user=username, password=password, autocommit=True)
+        conn = pyodbc.connect(driver="{SQL Server}", server=server, database=database, uid=username, pwd=password, autocommit=True)
+        #conn = #pytds.connect(dsn=server, database=database, user=username, password=password, autocommit=True)
         #conn = pyodbc.connect(driver="{SQL Server}", server=server, database=database, uid=username, pwd=password, autocommit=True)
     except Exception as err:
         # database_logger().error(err, exc_info = True)
