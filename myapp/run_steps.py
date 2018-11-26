@@ -9,6 +9,8 @@ bp = Blueprint('run_steps', __name__, url_prefix='/run_steps', static_folder='st
 
 @bp.route('/<run_id>', methods=['POST'])
 def create_run_steps(run_id=None):
+    return "Dodge", 200
+
     steps = {1: 'Calculate Shift Weight',
              2: 'Calculate Non-Response Weight',
              3: 'Calculate Minimums Weight',

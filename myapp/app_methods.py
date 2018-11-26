@@ -1,6 +1,7 @@
 import pyodbc
 import os
-#import pytds
+from sqlalchemy import create_engine
+
 
 def get_connection():
     """
@@ -35,3 +36,19 @@ def get_connection():
         return False
     else:
         return conn
+
+
+def get_engine():
+    username = os.getenv("DB_USER_NAME")
+    password = os.getenv("DB_PASSWORD")
+    server = os.getenv("DB_SERVER")
+    database = os.getenv("DB_NAME")
+
+    connection_string = r'mssql+pyodbc://' + username + \
+                        r':' + password + \
+                        r'@' + server + \
+                        r'/' + database + \
+                        r'?driver=SQL+Server+Native+Client+11.0'
+
+    eng = create_engine(connection_string)
+    return eng
