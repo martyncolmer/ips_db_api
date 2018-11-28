@@ -4,6 +4,8 @@ import myapp.persistence_layer as p_layer
 from myapp.app_methods import get_engine
 
 
+# RUNS
+
 def get_run(run_id=False):
     data = p_layer.get('RUN')
 
@@ -59,7 +61,7 @@ def edit_run(run_id):
     return "", 200
 
 
-# Run_Steps
+# RUN_STEPS
 
 def get_run_steps(run_id=None):
 
@@ -71,7 +73,7 @@ def get_run_steps(run_id=None):
     if run_id:
         data = data.loc[data['RUN_ID'] == run_id]
 
-        if len(data) == 0:
+        if data.empty:
             abort(400)
 
     output = data.to_json(orient='records')
@@ -112,9 +114,108 @@ def create_run_steps(run_id):
     # Convert the dictionary into data frame format
     df = pandas.DataFrame(data)
 
+    # Deletes run_steps records for the active run before inserting updated step data
+    p_layer.delete_from_table('RUN_STEPS', 'RUN_ID', '=', str(df['RUN_ID'][0]))
+
     # Writes data frame to sql
     eng = get_engine()
     df.to_sql('RUN_STEPS', eng, if_exists='append', index=False)
 
     return "", 201
+
+
+def edit_run_steps(run_id, value, step_number=None):
+
+    if not run_id:
+        abort(400)
+
+    if not value:
+        abort(400)
+
+    df = p_layer.get('RUN_STEPS')
+
+    df = df.loc[df['RUN_ID'] == run_id]
+
+    if step_number:
+        df.loc[df['STEP_NUMBER'] == float(step_number), 'STEP_STATUS'] = float(value)
+    else:
+        df.STEP_STATUS = value
+
+    df.index = range(0, len(df))
+
+    # Deletes run_steps records for the active run before inserting updated step data
+    p_layer.delete_from_table('RUN_STEPS', 'RUN_ID', '=', str(df['RUN_ID'][0]))
+
+    # Writes new data to sql
+    eng = get_engine()
+    df.to_sql('RUN_STEPS', eng, if_exists='append', index=False)
+
+    return "", 200
+
+
+# PROCESS VARIABLE
+
+def get_process_variables(run_id=None):
+
+    data = p_layer.get('PROCESS_VARIABLE_PY')
+
+    if data.empty:
+        abort(400)
+
+    if run_id:
+        data = data.loc[data['RUN_ID'] == run_id]
+
+        if data.empty:
+            abort(400)
+
+    output = data.to_json(orient='records')
+
+    return output
+
+
+def create_process_variables(run_id, template_id):
+
+    data = get_process_variables(template_id)
+
+    # Convert the dictionary into data frame format
+    df = pandas.DataFrame(data, index=[0])
+
+    if df.empty:
+        abort(400)
+
+    df['RUN_ID'] = run_id
+
+    # Writes data frame to sql
+    eng = get_engine()
+    df.to_sql('PROCESS_VARIABLE_PY', eng, if_exists='append', index=False)
+
+    return "", 201
+
+
+def edit_process_variables():
+
+    # the request should be json and an id must be present
+    if not request.json:
+        abort(400)
+
+    updated_data = request.json
+
+
+    return
+    # Get records relating to that pv
+    data = ProcessVariables.query.filter_by(RUN_ID=updated_data['RUN_ID']).all()
+
+    if not data:
+        abort(400)
+
+    for rec in data:
+        if rec.PV_NAME in updated_data['PV_NAME']:
+            rec.PV_CONTENT = updated_data['PV_CONTENT']
+            rec.PV_REASON = updated_data['PV_REASON']
+
+    db.session.commit()
+
+    return "", 200
+
+# PROCESS VARIABLE SETS
 
