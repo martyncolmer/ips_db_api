@@ -25,7 +25,16 @@ def client():
 
 
 def test_create_process_variables(client):
-    rv = client.post('/process_variables/Test-Run-ID/TEMPLATE')
+
+    json_data = []
+    rec1 = {'PV_NAME': 'AutomatedTest_PV_1', 'PV_CONTENT': 'AutomatedTest_PV_Content_1', 'PV_REASON': 'AutomatedTest_PV_Reason_1'}
+
+    rec2 = {'PV_NAME': 'AutomatedTest_PV_2', 'PV_CONTENT': 'AutomatedTest_PV_Content_2', 'PV_REASON': 'AutomatedTest_PV_Reason_2'}
+
+    json_data.append(rec1)
+    json_data.append(rec2)
+
+    rv = client.post('/process_variables/Test-Run-ID', json=json_data, content_type='application/json')
     assert rv.status_code == 201
 
 

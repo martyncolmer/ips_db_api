@@ -67,17 +67,17 @@ def test_import_unsampled_ooh_data(client):
 
     json_data = []
     rec1 = {'RUN_ID': 'Automated-Run_ID', 'YEAR': 'YEAR', 'MONTH': 'MONTH',
-            'DATA_SOURCE_ID': 'DATA_SOURCE_ID', 'PORTROUTE': 'PORTROUTE', 'REGION': 'REGION',
+            'DATASOURCE': 'DATASOURCE', 'PORTROUTE': 'PORTROUTE', 'REGION': 'REGION',
             'ARRIVEDEPART': 'ARRIVEDEPART', 'UNSAMP_TOTAL': 'UNSAMP_TOTAL'}
 
     rec2 = {'RUN_ID': 'Automated-Run_ID', 'YEAR': 'YEAR2', 'MONTH': 'MONTH2',
-            'DATA_SOURCE_ID': 'DATA_SOURCE_ID2', 'PORTROUTE': 'PORTROUTE2', 'REGION': 'REGION2',
+            'DATASOURCE': 'DATASOURCE2', 'PORTROUTE': 'PORTROUTE2', 'REGION': 'REGION2',
             'ARRIVEDEPART': 'ARRIVEDEPART2', 'UNSAMP_TOTAL': 'UNSAMP_TOTAL2'}
 
     json_data.append(rec1)
     json_data.append(rec2)
 
-    rv = client.post('/unsampled_ooh_data/Automated-Run_ID', json=json_data, content_type='application/json')
+    rv = client.post('/unsampled_ooh_data/Automated-Run_ID', json=json_data)
     assert rv.status_code == 200
 
     rv = client.get('/unsampled_ooh_data/Automated-Run_ID')

@@ -91,6 +91,13 @@ def main():
             db.session.add(r)
         db.session.commit()
 
+        # # Load SURVEY_SUBSAMPLE data
+        # reader10 = csv.DictReader(open('resources/SURVEY_SUBSAMPLE.csv'))
+        # for record in reader10:
+        #     r = ExportDataDownload(**record)
+        #     db.session.add(r)
+        # db.session.commit()
+
 
 if __name__ == '__main__':
     main()
