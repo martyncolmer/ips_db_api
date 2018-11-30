@@ -40,11 +40,12 @@ def create_app(test_config=None):
             app.config.from_mapping(test_config)
 
     # Register Blueprints
-    from . import runs, run_steps, pv_sets, pv
+    from . import runs, run_steps, pv_sets, pv, survey_subsample
     app.register_blueprint(runs.bp)
     app.register_blueprint(run_steps.bp)
     app.register_blueprint(pv_sets.bp)
     app.register_blueprint(pv.bp)
+    app.register_blueprint(survey_subsample.bp)
 
     # Register Simple Index Page
     @app.route('/')

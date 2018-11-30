@@ -1,14 +1,20 @@
 from flask import request, Blueprint
 from flask import Flask, jsonify, request, abort
 from myapp.models import db, ProcessVariableSet
+import myapp.business_logic as b_logic
 
-bp = Blueprint('pvsets', __name__, url_prefix='/pvsets', static_folder='static')
+bp = Blueprint('pvsets', __name__, url_prefix='/pv_sets', static_folder='static')
 
 
 # PROCESS VARIABLE SETS
 
-@bp.route('/we', methods=['POST'])
+@bp.route('', methods=['POST'])
 def create_new_pv_set():
+
+    b_logic.create_pv_set()
+
+    return "", 201
+
     # the request should be json and an id must be present
     if not request.json or 'RUN_ID' not in request.json:
         abort(400)
@@ -24,8 +30,12 @@ def create_new_pv_set():
     return "", 201
 
 
-@bp.route('/we', methods=['GET'])
+@bp.route('', methods=['GET'])
 def get_pv_sets():
+    output = b_logic.get_pv_sets()
+
+    return output
+
     column_names = ['RUN_ID', 'NAME', 'USER', 'START_DATE', 'END_DATE']
 
     # Get all records
@@ -44,8 +54,10 @@ def get_pv_sets():
     return jsonify(output)
 
 
-@bp.route('/we', methods=['PUT'])
-def update_pv_set(run_id, pv_name):
+@bp.route('', methods=['PUT'])
+def edit_pv_set(run_id, pv_name):
+
+    return
 
     # the request should be json and an id must be present
     if not request.json or 'PV_CONTENT' not in request.json:
@@ -65,3 +77,18 @@ def update_pv_set(run_id, pv_name):
     db.session.commit()
 
     return "", 200
+
+
+@bp.route('/<run_id>', methods=['DELETE'])
+def delete_pv_set(run_id=None):
+    b_logic.delete_pv_set(run_id)
+
+    return "", 200
+
+    # data = ShiftData.query.filter_by(RUN_ID=run_id).all()
+    # for rec in data:
+    #     db.session.delete(rec)
+    #
+    # db.session.commit()
+    #
+    # return "", 200

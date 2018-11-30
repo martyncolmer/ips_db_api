@@ -153,11 +153,11 @@ def edit_run_steps(run_id, value, step_number=None):
     return "", 200
 
 
-# PROCESS VARIABLE
+# RESPONSE - These need testing as we couldn't connect to each other properly
 
-def get_process_variables(run_id=None):
+def get_response(run_id):
 
-    data = p_layer.get('PROCESS_VARIABLE_PY')
+    data = p_layer.get('RESPONSE')
 
     if data.empty:
         abort(400)
@@ -173,12 +173,57 @@ def get_process_variables(run_id=None):
     return output
 
 
-def create_process_variables(run_id, template_id):
+def create_response(run_id, step_number):
+    if not request.json or 'RUN_ID' not in request.json:
+        abort(400)
 
-    data = get_process_variables(template_id)
+    # Get data dictionary from the json request
+    data = request.json
 
     # Convert the dictionary into data frame format
     df = pandas.DataFrame(data, index=[0])
+
+    # Writes data frame to sql
+    eng = get_engine()
+    df.to_sql('RESPONSE', eng, if_exists='append', index=False)
+
+    return "", 201
+
+
+# PROCESS VARIABLE
+
+def get_process_variables(run_id=None):
+
+    data = p_layer.get('PROCESS_VARIABLE_PY')
+
+    if data.empty:
+        abort(400)
+
+    if run_id:
+        data = data.loc[data['RUN_ID'] == run_id]
+
+        if data.empty:
+            abort(400)
+    data.sort_values('PROCESS_VARIABLE_ID', inplace=True)
+    data.index = range(0, len(data))
+    output = data.to_json(orient='records')
+
+    return output
+
+
+def create_process_variables(run_id):
+
+    # Check if the request contains json data and an id (these must be present)
+    if not request.json:
+        abort(400)
+
+    # Get data dictionary from the json request
+    data = request.json
+
+    # Convert the dictionary into data frame format
+    df = pandas.DataFrame(data)
+
+    df.index = range(0, len(df))
 
     if df.empty:
         abort(400)
@@ -192,30 +237,104 @@ def create_process_variables(run_id, template_id):
     return "", 201
 
 
-def edit_process_variables():
-
-    # the request should be json and an id must be present
-    if not request.json:
-        abort(400)
-
-    updated_data = request.json
-
-
-    return
-    # Get records relating to that pv
-    data = ProcessVariables.query.filter_by(RUN_ID=updated_data['RUN_ID']).all()
-
-    if not data:
-        abort(400)
-
-    for rec in data:
-        if rec.PV_NAME in updated_data['PV_NAME']:
-            rec.PV_CONTENT = updated_data['PV_CONTENT']
-            rec.PV_REASON = updated_data['PV_REASON']
-
-    db.session.commit()
+def delete_process_variables(run_id=None):
+    p_layer.delete_from_table('PROCESS_VARIABLE_PY', 'RUN_ID', '=', run_id)
 
     return "", 200
 
+
 # PROCESS VARIABLE SETS
 
+def create_pv_set():
+    # Check if the request contains json data and an id (these must be present)
+    if not request.json or 'RUN_ID' not in request.json:
+        abort(400)
+
+    # Get data dictionary from the json request
+    data = request.json
+
+    # Convert the dictionary into data frame format
+    df = pandas.DataFrame(data, index=[0])
+
+    # Writes data frame to sql
+    eng = get_engine()
+    df.to_sql('PROCESS_VARIABLE_SET', eng, if_exists='append', index=False)
+
+    return "", 201
+
+
+def get_pv_sets():
+
+    data = p_layer.get('PROCESS_VARIABLE_SET')
+
+    output = data.to_json(orient='records')
+
+    return output
+
+
+def delete_pv_set(run_id=None):
+    p_layer.delete_from_table('PROCESS_VARIABLE_SET', 'RUN_ID', '=', run_id)
+
+    return "", 200
+
+
+# IMPORT DATA
+
+# @TODO: This doesn't work due to errors with the data being converted through the FileStorage object (needs investigation)
+
+def import_data(run_id, table_name, filepath):
+
+    # Check if the request contains json data and an id (these must be present)
+    if not request.json:
+        abort(400)
+
+    # Get data dictionary from the json request
+    data = request.json
+
+    # Convert the dictionary into data frame format
+    df = pandas.DataFrame(data)
+
+    df.index = range(0, len(df))
+
+    if df.empty:
+        abort(400)
+
+    p_layer.delete_from_table(table_name, 'RUN_ID', '=', run_id)
+
+    df['RUN_ID'] = run_id
+
+    p_layer.insert_dataframe_into_table(table_name=table_name, dataframe=df)
+
+    # Writes data frame to sql
+    # eng = get_engine()
+    # df.to_sql(table_name, eng, if_exists='append', index=False)
+
+    return "", 201
+
+
+def import_data_OLD(run_id, table_name):
+
+    # Check if the request contains json data and an id (these must be present)
+    if not request.json:
+        abort(400)
+
+    # Get data dictionary from the json request
+    data = request.json
+
+    # Convert the dictionary into data frame format
+    df = pandas.DataFrame(data)
+
+    df.index = range(0, len(df))
+
+    if df.empty:
+        abort(400)
+
+    p_layer.delete_from_table(table_name, 'RUN_ID', '=', run_id)
+
+    df['RUN_ID'] = run_id
+
+    # Writes data frame to sql
+    eng = get_engine()
+    df.to_sql(table_name, eng, if_exists='append', index=False)
+
+    return "", 201
