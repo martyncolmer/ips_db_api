@@ -1,4 +1,5 @@
 import pandas
+import json
 from flask import request, abort
 import myapp.persistence_layer as p_layer
 from myapp.app_methods import get_engine
@@ -173,7 +174,7 @@ def get_response(run_id):
     return output
 
 
-def create_response(run_id, step_number):
+def create_response():
     if not request.json or 'RUN_ID' not in request.json:
         abort(400)
 
@@ -276,6 +277,74 @@ def delete_pv_set(run_id=None):
     p_layer.delete_from_table('PROCESS_VARIABLE_SET', 'RUN_ID', '=', run_id)
 
     return "", 200
+
+
+# EXPORT DATA DOWNLOAD
+
+def create_export_data_download():
+    if not request.data:
+        abort(400)
+
+    # Get json dictionary and values
+    json_data = json.loads(request.data)
+
+    data = []
+
+    rec = {'RUN_ID': json_data['RUN_ID'],
+           'DOWNLOADABLE_DATA': json_data['DOWNLOADABLE_DATA'],
+           'FILENAME': json_data['FILENAME'],
+           'SOURCE_TABLE': json_data['SOURCE_TABLE'],
+           'DATE_CREATED': json_data['DATE_CREATED']}
+
+    data.append(rec)
+
+    # Convert the dictionary into data frame format
+    df = pandas.DataFrame(data)
+
+    # Writes data frame to sql
+    eng = get_engine()
+    df.to_sql('EXPORT_DATA_DOWNLOAD', eng, if_exists='append', index=False)
+
+    return "", 201
+
+
+def get_export_data_download(run_id, file_name, source_table):
+    data = p_layer.get('EXPORT_DATA_DOWNLOAD')
+
+    if data.empty:
+        abort(400)
+
+    if run_id:
+        data = data.loc[data['RUN_ID'] == run_id]
+
+        if data.empty:
+            abort(400)
+
+    if file_name:
+        data = data.loc[data['FILENAME'] == file_name]
+
+    if source_table:
+        data = data.loc[data['SOURCE_TABLE'] == source_table]
+
+    output = data.to_json(orient='records')
+
+    return output
+
+
+# DATA
+
+def get_data(run_id, table_name):
+    data = p_layer.select_data('*', table_name, 'RUN_ID', run_id)
+
+    if data.empty:
+        abort(400)
+
+    data.sort_values('RUN_ID', inplace=True)
+    data.index = range(0, len(data))
+
+    output = data.to_json(orient='records')
+
+    return output
 
 
 # IMPORT DATA

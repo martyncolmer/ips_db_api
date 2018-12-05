@@ -9,14 +9,14 @@ bp = Blueprint('response', __name__, url_prefix='/RESPONSE', static_folder='stat
 
 @bp.route('/<run_id>', methods=['GET'])
 @bp.route('/<run_id>', methods=['GET'])
-def get_run_steps(run_id):
+def get_response(run_id):
     output = b_logic.get_response(run_id)
 
     return output
 
 
-@bp.route('/<run_id>/<step_number>', methods=['POST'])
-def create_run_steps(run_id, step_number):
-    b_logic.create_response(run_id, step_number)
+@bp.route('', methods=['POST'])
+def create_response():
+    b_logic.create_response()
 
     return "", 201

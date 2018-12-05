@@ -1,4 +1,4 @@
-from myapp.app_methods import get_connection, get_engine
+from myapp.app_methods import get_connection
 import pandas
 
 
@@ -68,3 +68,46 @@ def delete_from_table(table_name, condition1=None, operator=None
         return False
     else:
         return sql
+
+
+def select_data(column_name, table_name, condition1, condition2):
+    """
+    Author        : Elinor Thorne
+    Date          : 21 Dec 2017
+    Purpose       : Uses SQL query to retrieve values from database
+    Parameters    : column_name, table_name, condition1, condition2, i.e:
+                  : "SELECT column_name FROM table_name WHERE condition1 = condition2" (no 'AND'/'OR' clause)
+    Returns       : Data Frame for multiple values, scalar/string for single values
+    Requirements  : None
+    """
+
+    # Connection variables
+    conn = get_connection()
+    # cur = conn.cursor()
+
+    # Create SQL statement
+    sql = """
+        SELECT {} 
+        FROM {}
+        WHERE {} = '{}'
+        """.format(column_name, table_name, condition1, condition2)
+
+    try:
+        result = pandas.read_sql(sql, conn)
+        # print("Result: {}".format(result))
+    except Exception as err:
+        print(err)
+        # Return False to indicate error
+        # database_logger().error(err, exc_info = True)
+        return False
+
+    # if an empty data frame is returned
+    if len(result) == 0:
+        # err_msg = "ERROR: SQL query failed to return result."
+        result = False
+    elif len(result) == 1:
+        # if a single value is returned we don't want it to be a data frame
+        result = result.loc[0, column_name]
+
+    return result
+
