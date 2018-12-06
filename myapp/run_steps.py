@@ -1,6 +1,5 @@
 from flask import request, Blueprint
 from flask import Flask, jsonify, request, abort
-from myapp.models import db, RunSteps
 import myapp.business_logic as b_logic
 import myapp.persistence_layer as p_layer
 

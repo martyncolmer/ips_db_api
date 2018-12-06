@@ -3,6 +3,15 @@ import json
 from flask import request, abort
 import myapp.persistence_layer as p_layer
 from myapp.app_methods import get_engine
+import subprocess
+
+
+# MANAGE_RUN
+
+def start_run(run_id):
+    subprocess.Popen(['C:\Applications\Python-3.6.32\python', 'run_ips.py', run_id])
+
+    return 200
 
 
 # RUNS

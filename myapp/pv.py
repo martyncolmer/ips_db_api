@@ -1,6 +1,5 @@
 from flask import request, Blueprint
 from flask import Flask, jsonify, request, abort
-from myapp.models import db, Run
 import myapp.business_logic as b_logic
 
 bp = Blueprint('process_variables', __name__, url_prefix='/process_variables', static_folder='static')

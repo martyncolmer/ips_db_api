@@ -2,10 +2,6 @@ import json
 from flask import Flask, jsonify, request, abort, redirect
 import requests
 
-from myapp.models import db, Run, RunSteps, ProcessVariableSet, ProcessVariables, \
-    ShiftData, NonResponseData, TrafficData, UnsampledOOHData, \
-    ImbalanceWeight, ExportDataDownload, SurveySubsample
-
 app = Flask(__name__)
 
 # Configuration needed by SQLAlchemy

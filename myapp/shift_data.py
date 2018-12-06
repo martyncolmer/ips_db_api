@@ -1,6 +1,5 @@
 from flask import request, Blueprint
 from flask import Flask, jsonify, request, abort
-from myapp.models import db, Run
 import myapp.business_logic as b_logic
 
 bp = Blueprint('shift_data', __name__, url_prefix='/SHIFT_DATA', static_folder='static')
