@@ -2,17 +2,51 @@ import pandas
 import json
 from flask import request, abort
 import myapp.persistence_layer as p_layer
-from myapp.app_methods import get_engine
+from myapp.app_methods import get_connection, get_engine
 import subprocess
+import os
+import ast
 
 
 # MANAGE_RUN
 
 def start_run(run_id):
-    subprocess.Popen(['C:\Applications\Python-3.6.32\python', 'run_ips.py', run_id])
+    step_list = request.json
+
+    conn = get_connection()
+    cur = conn.cursor()
+
+    archive_step_response(run_id, step_list)
+
+    sql = "UPDATE RUN SET RUN_STATUS = 1 WHERE RUN_ID = '" + run_id + "'"
+
+    cur.execute(sql)
+
+    reset_run_step_status(run_id,step_list)
+
+    subprocess.Popen(['C:\Applications\Python-3.6.32\python', os.path.dirname(os.path.realpath(__file__)) + r'\run_ips.py', run_id, step_list])
 
     return 200
 
+
+def reset_run_step_status(run_id, steps):
+
+    steps = ast.literal_eval(steps)
+
+    if len(steps) > 0:
+
+        conn = get_connection()
+        cur = conn.cursor()
+
+        sql = "UPDATE RUN_STEPS SET STEP_STATUS = 0 WHERE RUN_ID = '" + run_id + "' and STEP_NUMBER in ( "
+
+        for x in steps:
+            sql += (str(x) + " ,")
+
+        sql = sql[:len(sql) - 1]
+        sql += ")"
+
+        cur.execute(sql)
 
 # RUNS
 
@@ -200,11 +234,44 @@ def create_response():
     return "", 201
 
 
+def archive_step_response(run_id, steps):
+
+    steps = ast.literal_eval(steps)
+
+    conn = get_connection()
+    cur = conn.cursor()
+
+    if len(steps) > 0:
+
+        # Generate insert statement for records that are being archived
+        insert_sql = "insert into RESPONSE_ARCHIVE select * from RESPONSE where RUN_ID = '" + run_id + "' and STEP_NUMBER in ( "
+        for x in steps:
+            insert_sql += (str(x) + " ,")
+
+        insert_sql = insert_sql[:len(insert_sql)-1]
+        insert_sql += ")"
+
+        cur.execute(insert_sql)
+
+        # Generate delete statement for moved archived
+        delete_sql = "delete from RESPONSE where RUN_ID = '" + run_id + "' and STEP_NUMBER in ( "
+        for x in steps:
+            delete_sql += (str(x) + " ,")
+
+        delete_sql = delete_sql[:len(delete_sql) - 1]
+        delete_sql += ")"
+
+        cur.execute(delete_sql)
+
+
 # PROCESS VARIABLE
 
 def get_process_variables(run_id=None):
 
     data = p_layer.get('PROCESS_VARIABLE_PY')
+    #data = p_layer.get_pvs()
+
+    data['PV_DEF'] = data['PV_DEF'].str.replace('&lt;', '<').str.replace('&gt;', '>')
 
     if data.empty:
         abort(400)
@@ -239,6 +306,8 @@ def create_process_variables(run_id):
         abort(400)
 
     df['RUN_ID'] = run_id
+
+    df['PV_DEF'] = df['PV_DEF'].str.replace('&lt;', '<').str.replace('&gt;', '>')
 
     # Writes data frame to sql
     eng = get_engine()
@@ -342,11 +411,15 @@ def get_export_data_download(run_id, file_name, source_table):
 
 # DATA
 
-def get_data(run_id, table_name):
+def get_data(run_id, table_name, datasource=False):
     data = p_layer.select_data('*', table_name, 'RUN_ID', run_id)
 
     if data.empty:
         abort(400)
+
+    if datasource:
+        if int(datasource) != 0:
+            data = data.loc[data['DATA_SOURCE_ID'] == int(datasource)]
 
     data.sort_values('RUN_ID', inplace=True)
     data.index = range(0, len(data))

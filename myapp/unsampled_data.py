@@ -7,13 +7,13 @@ bp = Blueprint('unsampled_ooh_data', __name__, url_prefix='/UNSAMPLED_OOH_DATA',
 
 @bp.route('/<run_id>', methods=['GET'])
 def get_unsampled_ooh_data(run_id):
-    b_logic.get_data(run_id, 'UNSAMPLED_OOH_DATA')
+    output = b_logic.get_data(run_id, 'UNSAMPLED_OOH_DATA')
 
-    return "", 201
+    return output
 
 
-@bp.route('/<run_id>', methods=['POST'])
-def import_unsampled_ooh_data(run_id):
-    b_logic.import_data(run_id, 'UNSAMPLED_OOH_DATA')
-
-    return "", 201
+# @bp.route('/<run_id>', methods=['POST'])
+# def import_unsampled_ooh_data(run_id):
+#     b_logic.import_data(run_id, 'UNSAMPLED_OOH_DATA')
+#
+#     return "", 201

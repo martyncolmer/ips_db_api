@@ -3,9 +3,6 @@ The Script to initialise the database and load in the data
 """
 
 from myapp.app import app
-from myapp.models import Run, db, RunSteps, ProcessVariables, \
-    ShiftData, TrafficData, UnsampledOOHData, NonResponseData, \
-    ProcessVariableSet, ImbalanceWeight, ExportDataDownload
 import csv
 
 

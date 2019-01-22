@@ -7,9 +7,9 @@ bp = Blueprint('non_response_data', __name__, url_prefix='/NON_RESPONSE_DATA', s
 
 @bp.route('/<run_id>', methods=['GET'])
 def get_non_response_data(run_id):
-    b_logic.get_data(run_id, 'NON_RESPONSE_DATA')
+    output = b_logic.get_data(run_id, 'NON_RESPONSE_DATA')
 
-    return "", 201
+    return output
 
 
 # @bp.route('/<run_id>', methods=['POST'])

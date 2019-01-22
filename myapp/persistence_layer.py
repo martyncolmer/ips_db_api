@@ -13,6 +13,42 @@ def get(table_name):
     return pandas.read_sql(sql, conn)
 
 
+def get_pvs():
+    conn = get_connection()
+
+    # Create a cursor object from the connection
+    cur = conn.cursor()
+
+    # Specify the sql query for retrieving the process variable statements from the database
+    sql = """SELECT 
+                RUN_ID, PROCESS_VARIABLE_ID, PV_NAME, PV_DESC, PV_DEF
+             FROM 
+                PROCESS_VARIABLE_PY
+             ORDER BY 
+                PROCESS_VARIABLE_ID"""
+
+    # Execute the sql query
+    cur.execute(sql)
+
+    data = cur.fetchall()
+
+    # Return the pv statements obtained from the sql query
+    return data
+
+
+    sql = "select * from PROCESS_VARIABLE_PY"
+
+    cur.execute(sql)
+
+    data = cur.fetchall()
+    vals = data.values
+    columns = ['RUN_ID', 'PROCESS_VARIABLE_ID', 'PV_NAME', 'PV_DESC', 'PV_DEF']
+    df = pandas.DataFrame(data)
+
+    return df
+
+
+
 def delete_from_table(table_name, condition1=None, operator=None
                       , condition2=None, condition3=None):
     """
@@ -99,12 +135,12 @@ def select_data(column_name, table_name, condition1, condition2):
         print(err)
         # Return False to indicate error
         # database_logger().error(err, exc_info = True)
-        return False
+        return pandas.DataFrame(pandas.DataFrame())
 
     # if an empty data frame is returned
     if len(result) == 0:
         # err_msg = "ERROR: SQL query failed to return result."
-        result = False
+        return pandas.DataFrame(pandas.DataFrame())
     elif len(result) == 1:
         # if a single value is returned we don't want it to be a data frame
         result = result.loc[0, column_name]
