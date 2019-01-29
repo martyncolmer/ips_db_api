@@ -26,6 +26,24 @@ FLASK_APP=myapp/app.py
 
 5. Run the application with `flask run`
 
+# Setting up the database
+
+There is a docker-compose file in the project root that can be used to pull 
+over the latest sql server instance and configure the database in a docker container.
+
+in the project root:
+
+```bash
+docker-compose up -d
+```
+
+to stop the service and delete the container:
+
+```bash
+docker-compose down
+```
+
+```
 
 # Making API requests
 
