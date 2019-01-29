@@ -1,0 +1,13 @@
+version: '3'
+services:
+  db:
+    build:
+      context: ./sql
+      dockerfile: Dockerfile
+    image: ons/sqlserver:v1
+    container_name: ips-db
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: "yourStrong123Password"
+    ports:
+      - 1433:1433
