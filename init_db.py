@@ -3,9 +3,6 @@ The Script to initialise the database and load in the data
 """
 
 from myapp.app import app
-from myapp.models import Run, db, RunSteps, ProcessVariables, \
-    ShiftData, TrafficData, UnsampledOOHData, NonResponseData, \
-    ProcessVariableSet, ImbalanceWeight, ExportDataDownload
 import csv
 
 
@@ -29,7 +26,7 @@ def main():
         # Load in run step data
         reader2 = csv.DictReader(open('resources/run_steps.csv'))
         for record in reader2:
-            r = RunSteps(**record)
+            # r = RunSteps(**record)
             db.session.add(r)
         db.session.commit()
 
