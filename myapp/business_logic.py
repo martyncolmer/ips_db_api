@@ -6,6 +6,7 @@ from myapp.app_methods import get_connection, get_engine
 import subprocess
 import os
 import ast
+from datetime import datetime
 
 
 # MANAGE_RUN
@@ -19,7 +20,9 @@ def start_run(run_id):
     archive_step_response(run_id, step_list)
 
     sql = "UPDATE RUN SET RUN_STATUS = 1 WHERE RUN_ID = '" + run_id + "'"
+    cur.execute(sql)
 
+    sql = "UPDATE RUN SET LAST_MODIFIED = '" + datetime.now().strftime('%Y-%d-%m %H:%M:%S') + "' WHERE RUN_ID = '" + run_id + "'"
     cur.execute(sql)
 
     reset_run_step_status(run_id,step_list)
