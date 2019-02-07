@@ -14,20 +14,6 @@ def create_new_pv_set():
 
     return "", 201
 
-    # the request should be json and an id must be present
-    if not request.json or 'RUN_ID' not in request.json:
-        abort(400)
-
-    pv_set = ProcessVariableSet(RUN_ID=request.json['RUN_ID'],
-                                NAME=request.json['NAME'],
-                                USER=request.json['USER'],
-                                START_DATE=request.json['START_DATE'],
-                                END_DATE=request.json['END_DATE'])
-    db.session.add(pv_set)
-    db.session.commit()
-
-    return "", 201
-
 
 @bp.route('', methods=['GET'])
 def get_pv_sets():
